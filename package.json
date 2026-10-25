@@ -1,0 +1,19 @@
+{
+  "name": "comitia-sitio",
+  "version": "1.0.0",
+  "description": "Sitio corporativo de Comitia en ES/EN/PT",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:pages": "SITE_ORIGIN=https://dianaponce-ai.github.io SITE_BASE=/comitia node build.mjs",
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  },
+  "private": true,
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}
