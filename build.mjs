@@ -30,10 +30,36 @@ for (const r of ['ar', 'latam', 'na', 'eu', 'mea', 'apac']) {
   VB[r] = [cx - w / 2, cy - h / 2, w, h].map(v => +v.toFixed(1));
 }
 
+// News articles: src/news/{slug}.{lang}.md
+const escH = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const slugify = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+const NB = {};
+for (const f of fs.readdirSync('src/news').filter(f => f.endsWith('.md')).sort()) {
+  const [slug, lg] = f.replace(/\.md$/, '').split('.');
+  const raw = fs.readFileSync('src/news/' + f, 'utf8');
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const title = m[1].match(/title:\s*(.*)/)[1].trim();
+  const blocks = m[2].trim().split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  const used = {}; const toc = []; let html = ''; let words = 0; let first = '';
+  for (const b of blocks) {
+    words += b.split(/\s+/).length;
+    const h = b.match(/^(#{2,3})\s+(.*)$/);
+    if (h) {
+      let id = slugify(h[2]); while (used[id]) id += '-2'; used[id] = 1;
+      if (h[1] === '##') toc.push([id, escH(h[2])]);
+      html += `<h${h[1].length} id="${id}">${escH(h[2])}</h${h[1].length}>`;
+    } else { if (!first) first = b; html += `<p>${escH(b)}</p>`; }
+  }
+  const sents = first.match(/[^.!?]+[.!?]+/g) || [first];
+  let ex = sents[0].trim(); if (ex.length < 110 && sents[1]) ex += ' ' + sents[1].trim();
+  (NB[slug] = NB[slug] || {})[lg] = { t: title, html, toc, ex, min: Math.max(1, Math.round(words / 220)) };
+}
+for (const k in NB) for (const l of ['es', 'en', 'pt']) if (!NB[k][l]) throw new Error('missing ' + k + ' ' + l);
 const css = fs.readFileSync('src/style.css', 'utf8');
 const code = [
   fs.readFileSync('src/prelude.js', 'utf8'),
   fs.readFileSync('src/data-core.js', 'utf8'),
+  'var NB=' + JSON.stringify(NB) + ';',
   'var LOC=' + JSON.stringify(LOC) + ';var VB=' + JSON.stringify(VB) + ';var LAND_PTS=' + JSON.stringify(LAND_PTS) + ';var LAND=' + JSON.stringify(LAND) + ';',
   fs.readFileSync('src/app.js', 'utf8')
 ].join('\n');

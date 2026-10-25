@@ -17,6 +17,22 @@ var ROUTES={
  nosotros:{es:'nosotros',en:'about-us',pt:'sobre-nos'},
  contacto:{es:'contacto',en:'contact',pt:'contato'}
 };
+var NEWS_ORDER=[
+ ['voto-electronico','general','electronic-voting','voto-eletronico'],
+ ['boleta-unica-electronica','bue','electronic-single-ballot','cedula-unica-eletronica'],
+ ['seguridad-electoral','general','electoral-security','seguranca-eleitoral'],
+ ['boleta-electronica','bue','electronic-ballot','cedula-eletronica'],
+ ['voto-por-internet','invote','internet-voting','voto-pela-internet'],
+ ['escrutinio-electronico','turing','electronic-vote-counting','apuracao-eletronica'],
+ ['urna-electronica','bue','electronic-voting-machine','urna-eletronica'],
+ ['tecnologia-electoral','general','electoral-technology','tecnologia-eleitoral'],
+ ['padron-electoral','notebox','electoral-roll','cadastro-eleitoral'],
+ ['escrutinio-provisorio','turing','preliminary-vote-count','apuracao-provisoria'],
+ ['votacion-online','invote','online-voting','votacao-online'],
+ ['gestion-electoral','notebox','electoral-management','gestao-eleitoral']
+];
+NEWS=NEWS_ORDER.map(function(r){ var b=NB[r[0]]; return {slug:r[0],cat:r[1],t:{es:b.es.t,en:b.en.t,pt:b.pt.t},p:{es:b.es.ex,en:b.en.ex,pt:b.pt.ex},min:{es:b.es.min,en:b.en.min,pt:b.pt.min}}; });
+NEWS_ORDER.forEach(function(r){ ROUTES['nota-'+r[0]]={p:'noticias',es:r[0],en:r[2],pt:r[3]}; });
 var PAGES=Object.keys(ROUTES);
 var SITE=(typeof __SITE__!=='undefined'&&__SITE__)||{mode:'spa',origin:'',base:''};
 function segs(page,lg){ var r=ROUTES[page],a=[]; if(r.p) a.push(ROUTES[r.p][lg]); if(r[lg]) a.push(r[lg]); return a; }
@@ -62,7 +78,12 @@ var U2={
  cs_cta_p:{es:'Cuéntenos el proceso y armamos la solución a medida.',en:'Tell us about the process and we will build a tailored solution.',pt:'Conte-nos sobre o processo e montamos a solução sob medida.'},
  back_cases:{es:'Volver a casos de éxito',en:'Back to case studies',pt:'Voltar aos casos de sucesso'},
  all_cases:{es:'Ver todos los casos de éxito',en:'View all case studies',pt:'Ver todos os casos de sucesso'},
- lang_name:{es:'Español',en:'English',pt:'Português'}
+ lang_name:{es:'Español',en:'English',pt:'Português'},
+ n_cat:{es:'Categoría',en:'Category',pt:'Categoria'},
+ n_read:{es:'Lectura',en:'Reading time',pt:'Leitura'},
+ n_toc:{es:'En este artículo',en:'In this article',pt:'Neste artigo'},
+ n_back:{es:'Volver a noticias',en:'Back to news',pt:'Voltar às notícias'},
+ n_more:{es:'Seguir leyendo',en:'Keep reading',pt:'Continue lendo'}
 };
 for(var k2 in U2) U[k2]=U2[k2];
 
@@ -100,7 +121,8 @@ function fmtDate(d){ var p=d.split('-'),y=p[0],m=MONTHS[lang][+p[1]-1],dd=+p[2];
 function ext(h,txt,cls){ return '<a class="tlink'+(cls?' '+cls:'')+'" href="'+h+'" target="_blank" rel="noreferrer">'+txt+' <svg><use href="#ext"/></svg></a>'; }
 function arrowLink(page,txt){ return '<a class="tlink" href="'+href(page)+'">'+txt+' <svg><use href="#arrow"/></svg></a>'; }
 function catLabel(c){ return c==='general'?u('general'):CATS[c]; }
-function newsUrl(n){ return CC+(lang==='en'?'en/':'')+'blog/'+n.slug; }
+function newsUrl(n){ return href('nota-'+n.slug); }
+function newsById(id){ return id&&id.indexOf('nota-')===0?newsBySlug(id.slice(5)):null; }
 function secHead(label,h,p,more,tag){ tag=tag||'h2'; return '<div class="sec-head"><p class="label">'+label+'</p><div><'+tag+'>'+h+'</'+tag+'>'+(p?'<p>'+p+'</p>':'')+(more?'<div class="more">'+more+'</div>':'')+'</div></div>'; }
 function phead(crumbs,label,h,lead,sub,extra){
   var c='<nav class="crumbs" aria-label="breadcrumb"><a href="'+href('inicio')+'">'+u('nav_inicio')+'</a>';
@@ -132,7 +154,7 @@ function caseCard(c,leadCase){
 }
 function casesGrid(){ return '<div class="cases">'+caseCard(CASES[0],true)+'<div class="cases-side">'+caseCard(CASES[1])+caseCard(CASES[2])+'</div></div>'; }
 function newsCard(n){
-  return '<a class="news" href="'+newsUrl(n)+'" target="_blank" rel="noreferrer" data-cat="'+n.cat+'"><span class="label">'+catLabel(n.cat)+'</span><h3>'+L(n.t)+'</h3><p>'+L(n.p)+'</p><span class="tlink">'+u('read_art')+' <svg><use href="#ext"/></svg></span></a>';
+  return '<a class="news" href="'+newsUrl(n)+'" data-cat="'+n.cat+'"><span class="label">'+catLabel(n.cat)+' · '+L(n.min)+' min</span><h3>'+L(n.t)+'</h3><p>'+L(n.p)+'</p><span class="tlink">'+u('read_art')+' <svg><use href="#arrow"/></svg></span></a>';
 }
 function pager(list,idx,nameFn){
   var p=list[idx-1], n=list[idx+1];
@@ -231,12 +253,25 @@ function solView(s){
   var pillars='<div class="pillars"><div><b>'+u('p_secure')+'</b><p>'+u('p_secure_t')+'</p></div><div><b>'+u('p_scal')+'</b><p>'+u('p_scal_t')+'</p></div><div><b>'+u('p_aud')+'</b><p>'+u('p_aud_t')+'</p></div></div>';
   var rel='';
   if(s.cases.length){ rel+='<h2>'+u('related_cases')+'</h2><div class="sol-list">'+s.cases.map(function(id){var c=caseById(id);return '<article class="sol compact"><h3 style="font-size:20px"><a href="'+href(c.id)+'">'+L(c.title)+'</a><span class="full">'+L(c.place)+' · '+fmtDate(c.date)+'</span></h3><div class="desc">'+L(c.short)+'</div><div class="sol-links">'+arrowLink(c.id,u('read_case'))+'</div></article>';}).join('')+'</div>'; }
-  if(s.news.length){ rel+='<h2>'+u('related_news')+'</h2><div class="sol-list">'+s.news.map(function(sl){var n=newsBySlug(sl);return '<article class="sol compact"><h3 style="font-size:20px"><a href="'+newsUrl(n)+'" target="_blank" rel="noreferrer">'+L(n.t)+'</a></h3><div class="desc">'+L(n.p)+'</div><div class="sol-links">'+ext(newsUrl(n),u('read_art'))+'</div></article>';}).join('')+'</div>'; }
+  if(s.news.length){ rel+='<h2>'+u('related_news')+'</h2><div class="sol-list">'+s.news.map(function(sl){var n=newsBySlug(sl);return '<article class="sol compact"><h3 style="font-size:20px"><a href="'+newsUrl(n)+'">'+L(n.t)+'</a></h3><div class="desc">'+L(n.p)+'</div><div class="sol-links">'+arrowLink('nota-'+n.slug,u('read_art'))+'</div></article>';}).join('')+'</div>'; }
   var ficha='<aside class="ficha"><h3>'+u('ficha')+'</h3><dl><dt>'+u('modality')+'</dt><dd>'+L(s.tag)+'</dd><dt>'+u('stages')+'</dt><dd>'+s.stages.map(function(i){return u('st'+i);}).join(' · ')+'</dd></dl><div class="links">'+ext(CC+sp(lang)+'/'+s.slug,u('official'))+'<a class="tlink sub" href="'+CC+'brochures/'+s.brochure+'" target="_blank" rel="noreferrer"><svg><use href="#dl"/></svg> '+u('brochure')+'</a></div></aside>';
   return phead([[u('nav_soluciones'),'soluciones'],[solName(s)]],L(s.tag),solName(s),L(s.desc),L(s.full))+
   '<section class="blk alt"><div class="wrap"><div class="detail"><div class="prose">'+body+pillars+rel+'</div>'+ficha+'</div></div></section>'+
   '<section class="blk" style="padding-block:0"><div class="wrap">'+pager(SOL,idx,solName)+'</div></section>'+
   ctaBand(u('demo_h').replace('{x}',solName(s)),u('demo_p'),u('demo_b'));
+}
+var CAT_SOL={bue:'bue',notebox:'notebox',turing:'turing',invote:'invote'};
+function newsView(n){
+  var b=NB[n.slug][lang], idx=NEWS.indexOf(n);
+  var toc=b.toc.map(function(h){ return '<li><a href="#'+h[0]+'" data-to="'+h[0]+'">'+h[1]+'</a></li>'; }).join('');
+  var rel=NEWS.filter(function(x){ return x!==n && x.cat===n.cat; }).concat(NEWS.filter(function(x){ return x!==n && x.cat!==n.cat; })).slice(0,3);
+  var sol=CAT_SOL[n.cat]?solById(CAT_SOL[n.cat]):null;
+  var ficha='<aside class="ficha"><h3>'+u('ficha')+'</h3><dl><dt>'+u('n_cat')+'</dt><dd>'+catLabel(n.cat)+'</dd><dt>'+u('n_read')+'</dt><dd>'+L(n.min)+' min</dd>'+(sol?'<dt>'+u('solution')+'</dt><dd><a href="'+href(sol.id)+'">'+solName(sol)+'</a></dd>':'')+'</dl>'+(toc?'<h3 style="border-top:1px solid var(--rule);margin-top:14px">'+u('n_toc')+'</h3><ol class="toc">'+toc+'</ol>':'')+'<div class="links"><a class="tlink sub" href="'+href('noticias')+'"><svg><use href="#back"/></svg> '+u('n_back')+'</a></div></aside>';
+  return phead([[u('nav_noticias'),'noticias'],[catLabel(n.cat)]],catLabel(n.cat),L(n.t),'')+
+  '<section class="blk alt"><div class="wrap"><div class="detail"><article class="prose article">'+b.html+'</article>'+ficha+'</div></div></section>'+
+  '<section class="blk"><div class="wrap">'+secHead(u('n_more'),u('news_h'),'')+'<div class="news-grid">'+rel.map(newsCard).join('')+'</div></div></section>'+
+  '<section class="blk" style="padding-block:0"><div class="wrap">'+pager(NEWS.map(function(x){return {id:'nota-'+x.slug,n:x};}),idx,function(x){return L(x.n.t);})+'</div></section>'+
+  ctaBand(u('contact_h'),u('contact_p'),u('cta_team'));
 }
 V['como-trabajamos']=function(){
   return phead([[u('nav_como')]],u('how_l'),u('how_h'),u('how_p'))+
@@ -268,10 +303,10 @@ V.noticias=function(){
   var f=NEWS[0], cats=['all','general','bue','notebox','turing','invote'];
   return phead([[u('nav_noticias')]],u('news_l'),u('news_h'),u('news_p'))+
   '<section class="blk alt"><div class="wrap">'+
-  '<a class="news-feat" href="'+newsUrl(f)+'" target="_blank" rel="noreferrer"><div><span class="label">'+u('featured')+' · '+catLabel(f.cat)+'</span><h2 style="font-size:clamp(26px,3vw,40px);font-stretch:114%;margin-top:14px">'+L(f.t)+'</h2></div><div><p>'+L(f.p)+'</p><span class="tlink">'+u('read_art')+' <svg><use href="#ext"/></svg></span></div></a>'+
+  '<a class="news-feat" href="'+newsUrl(f)+'"><div><span class="label">'+u('featured')+' · '+catLabel(f.cat)+'</span><h2 style="font-size:clamp(26px,3vw,40px);font-stretch:114%;margin-top:14px">'+L(f.t)+'</h2></div><div><p>'+L(f.p)+'</p><span class="tlink">'+u('read_art')+' <svg><use href="#arrow"/></svg></span></div></a>'+
   '<div class="filters" role="group" id="filters">'+cats.map(function(c){return '<button type="button" data-cat="'+c+'" aria-pressed="'+(newsFilter===c)+'">'+(c==='all'?u('all'):catLabel(c))+'</button>';}).join('')+'</div>'+
   '<div class="news-grid" id="newsGrid">'+newsList()+'</div>'+
-  (lang==='pt'?'<p style="margin-top:24px;font-size:13.5px;color:var(--muted)">'+u('lang_note')+'</p>':'')+
+  
   '</div></section>'+ctaBand(u('contact_h'),u('contact_p'),u('cta_team'));
 };
 function officesList(){
@@ -323,6 +358,7 @@ function viewHTML(page){
   if(V[page]) return V[page]();
   if(solById(page)) return solView(solById(page));
   if(caseById(page)) return caseView(caseById(page));
+  if(newsById(page)) return newsView(newsById(page));
   return V.notfound();
 }
 var NAV=[['soluciones','nav_soluciones'],['como-trabajamos','nav_como'],['casos','nav_casos'],['noticias','nav_noticias'],['nosotros','nav_nosotros'],['contacto','nav_contacto']];
@@ -350,6 +386,7 @@ function meta(page){
   if(page==='inicio'){ t='COMITIA | '+strip(u('hero_h')); d=u('hero_p'); }
   else if(solById(page)){ var s=solById(page); t=solName(s)+': '+L(s.full)+' | COMITIA'; d=L(s.desc); }
   else if(caseById(page)){ var c=caseById(page); t=L(c.title)+' | COMITIA'; d=L(c.short); }
+  else if(newsById(page)){ var nn=newsById(page); t=L(nn.t)+' | COMITIA'; d=L(nn.p); }
   else {
     var m={soluciones:['nav_soluciones','sol_p'],'como-trabajamos':['nav_como','how_p'],casos:['nav_casos','cs_p'],noticias:['news_l','news_p'],nosotros:['nav_nosotros','about_p'],contacto:['nav_contacto','contact_p']}[page];
     t=u(m[0])+' | COMITIA'; d=u(m[1]);
@@ -455,7 +492,7 @@ function renderSPA(isNav){
   bind(r.page);
 }
 if(typeof document!=='undefined' && !SITE.build){
-  document.addEventListener('click', function(e){ var b=e.target.closest('[data-copy]'); if(b) copyText(b.dataset.copy, b); });
+  document.addEventListener('click', function(e){ var b=e.target.closest('[data-copy]'); if(b) copyText(b.dataset.copy, b); var t=e.target.closest('[data-to]'); if(t){ var el=document.getElementById(t.dataset.to); if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth',block:'start'}); } } });
   if(SITE.mode==='static'){ bind(SITE.page); }
   else { window.addEventListener('hashchange', function(){ renderSPA(true); }); renderSPA(false); }
 }
