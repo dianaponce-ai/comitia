@@ -16,6 +16,8 @@
   --teal:#5AC4B2;--teal-bright:#6FD3C1;--teal-wash:#14302F;--land:#222B43;color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+img,svg{max-width:100%}
 html{scroll-padding-top:96px}
 body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}

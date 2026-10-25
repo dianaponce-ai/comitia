@@ -56,6 +56,8 @@ for (const f of fs.readdirSync('src/news').filter(f => f.endsWith('.md')).sort()
 }
 for (const k in NB) for (const l of ['es', 'en', 'pt']) if (!NB[k][l]) throw new Error('missing ' + k + ' ' + l);
 const css = fs.readFileSync('src/style.css', 'utf8');
+const FAVSVG = fs.readFileSync('src/icons/favicon.svg', 'utf8');
+const ICONS = (b) => `<link rel="icon" href="${b}/favicon.svg" type="image/svg+xml"><link rel="icon" href="${b}/favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="${b}/apple-touch-icon.png"><link rel="manifest" href="${b}/site.webmanifest"><meta name="theme-color" content="#1E2740">`;
 const code = [
   fs.readFileSync('src/prelude.js', 'utf8'),
   fs.readFileSync('src/data-core.js', 'utf8'),
@@ -75,6 +77,7 @@ const SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden=
 
 /* 1) Artifact (single file, hash routes per language) */
 const artifact = `<title>Comitia</title>
+<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(FAVSVG.replace(/\s+/g, ' '))}">
 <meta name="claude:viewport-fit-sides" content="cover">
 ${FONTS}
 <style>${css}</style>
@@ -94,6 +97,8 @@ const out = 'dist';
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out + '/assets', { recursive: true });
 fs.writeFileSync(out + '/assets/site.css', css);
+for (const f of fs.readdirSync('src/icons')) fs.copyFileSync('src/icons/' + f, out + '/' + f);
+fs.writeFileSync(out + '/site.webmanifest', JSON.stringify({ name: 'Comitia', short_name: 'Comitia', start_url: BASE + '/', display: 'browser', background_color: '#1E2740', theme_color: '#1E2740', icons: [{ src: BASE + '/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: BASE + '/icon-512.png', sizes: '512x512', type: 'image/png' }] }, null, 2));
 fs.writeFileSync(out + '/assets/app.js', code);
 const LOCALE = { es: 'es_AR', en: 'en_US', pt: 'pt_BR' };
 const HTMLLANG = { es: 'es', en: 'en', pt: 'pt-BR' };
@@ -128,6 +133,7 @@ ${LANGS.map(x => `<link rel="alternate" hreflang="${HTMLLANG[x]}" href="${alts[x
 <meta property="og:locale" content="${LOCALE[l]}">
 ${LANGS.filter(x => x !== l).map(x => `<meta property="og:locale:alternate" content="${LOCALE[x]}">`).join('\n')}
 <meta property="og:image" content="${ORIGIN}/comitia-og.jpg">
+${ICONS(BASE)}
 ${FONTS}
 <link rel="stylesheet" href="${BASE}/assets/site.css">
 ${ld}
@@ -146,7 +152,7 @@ ${SPRITE}
   }
 }
 // Root: send visitors to their language, crawlers see x-default links
-fs.writeFileSync(out + '/index.html', `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title>
+fs.writeFileSync(out + '/index.html', `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title>${ICONS(BASE)}
 <link rel="canonical" href="${ORIGIN}${BASE}/es/">
 <link rel="alternate" hreflang="es" href="${ORIGIN}${BASE}/es/"><link rel="alternate" hreflang="en" href="${ORIGIN}${BASE}/en/"><link rel="alternate" hreflang="pt-BR" href="${ORIGIN}${BASE}/pt/"><link rel="alternate" hreflang="x-default" href="${ORIGIN}${BASE}/es/">
 <script>var n=(navigator.language||'es').slice(0,2);location.replace('${BASE}/'+(n==='en'||n==='pt'?n:'es')+'/');</script>
