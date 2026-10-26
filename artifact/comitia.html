@@ -572,6 +572,29 @@ a:hover>.case-img img,a:hover>.news-img img,.nf-img img,.lb:hover img{will-chang
 .certs .badge{display:flex;width:fit-content;height:64px}
 @media (max-width:900px){.creds-groups{grid-template-columns:1fr}}
 @media (max-width:600px){.badge{height:46px}}
+/* Fixes: related rows, milestones */
+.sol-img.photo{background:var(--land);border:0}
+.sol-img.photo img{object-fit:cover;padding:0}
+.ms-top{flex-wrap:wrap;align-items:flex-start}
+.ms-top .label{white-space:nowrap;padding-top:6px}
+.ms-top .pls{justify-content:flex-end;margin-left:auto}
+a.ms-link{text-decoration:none;color:inherit;transition:background .2s}
+a.ms-link:hover{background:var(--surface)}
+a.ms-link:hover h3{color:var(--teal)}
+.ms .tlink{align-self:flex-start;margin-top:6px}
+.ms .where{margin-top:auto}
+.prose .sol.compact{grid-template-columns:120px minmax(0,1fr) auto;column-gap:22px;row-gap:6px;align-items:start}
+.prose .sol.compact .sol-img{grid-column:1;grid-row:1/span 2;align-self:start}
+.prose .sol.compact h3{grid-column:2;grid-row:1}
+.prose .sol.compact .desc{grid-column:2;grid-row:2;font-size:15.5px}
+.prose .sol.compact .sol-links{grid-column:3;grid-row:1/span 2}
+.prose .sol.compact h3,.prose .sol.compact .full{hyphens:auto;overflow-wrap:break-word}
+@media (max-width:640px){
+  .prose .sol.compact{grid-template-columns:88px minmax(0,1fr)}
+  .prose .sol.compact .desc,.prose .sol.compact .sol-links{grid-column:1/-1;grid-row:auto}
+  .prose .sol.compact .sol-img{grid-row:1}
+  .prose .sol.compact .sol-links{flex-direction:row}
+}
 </style>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
 <symbol id="iso" viewBox="0 0 100 100"><g fill="none" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"><path d="M89.53 55.5L59.53 55.5L74.53 81.48 M65 86.98L50 61L35 86.98 M25.47 81.48L40.47 55.5L10.47 55.5 M10.47 44.5L40.47 44.5L25.47 18.52 M74.53 18.52L59.53 44.5L89.53 44.5" stroke="currentColor"/><path d="M43 26.88L50 39L65.5 12.15" stroke="#5AC4B2"/></g></symbol>
@@ -931,11 +954,11 @@ var XREG=[
 var PLATS=[['B','BUE'],['N','Notebox'],['T','Turing'],['I','Invote'],['O',null]];
 function platName(c){ for(var i=0;i<PLATS.length;i++) if(PLATS[i][0]===c) return PLATS[i][1]||u('x_others'); }
 var MS=[
- {when:'2025',pl:'I',h:{es:'<b>1.ª</b> votación por internet desde la Antártida',en:'<b>1st</b> internet vote from Antarctica',pt:'<b>1.ª</b> votação pela internet a partir da Antártida'},p:{es:'Por primera vez en el mundo, el personal de las bases antárticas votó en línea en las elecciones de Tierra del Fuego.',en:'For the first time in the world, staff at Antarctic bases voted online in the Tierra del Fuego elections.',pt:'Pela primeira vez no mundo, o pessoal das bases antárticas votou online nas eleições da Terra do Fogo.'},w:{es:'Ushuaia, Tierra del Fuego',en:'Ushuaia, Tierra del Fuego',pt:'Ushuaia, Terra do Fogo'}},
+ {when:'2025',pl:'I',c:'caso-tierra-del-fuego',h:{es:'<b>1.ª</b> votación por internet desde la Antártida',en:'<b>1st</b> internet vote from Antarctica',pt:'<b>1.ª</b> votação pela internet a partir da Antártida'},p:{es:'Por primera vez en el mundo, el personal de las bases antárticas votó en línea en las elecciones de Tierra del Fuego.',en:'For the first time in the world, staff at Antarctic bases voted online in the Tierra del Fuego elections.',pt:'Pela primeira vez no mundo, o pessoal das bases antárticas votou online nas eleições da Terra do Fogo.'},w:{es:'Ushuaia, Tierra del Fuego',en:'Ushuaia, Tierra del Fuego',pt:'Ushuaia, Terra do Fogo'}},
  {when:'2011–2023',pl:'I',h:{es:'Voto electrónico en el <b>100%</b> del país',en:'Electronic voting across <b>100%</b> of the country',pt:'Voto eletrônico em <b>100%</b> do país'},p:{es:'Elecciones del Federal National Council implementadas en todo el territorio de los Emiratos durante más de una década.',en:'Federal National Council elections implemented across the entire UAE for more than a decade.',pt:'Eleições do Federal National Council implementadas em todo o território dos Emirados por mais de uma década.'},w:{es:'Emiratos Árabes Unidos',en:'United Arab Emirates',pt:'Emirados Árabes Unidos'}},
  {when:{es:'Plataforma permanente',en:'Permanent platform',pt:'Plataforma permanente'},pl:'I',h:{es:'<b>16 millones</b> de votantes en una sola plataforma',en:'<b>16 million</b> voters on a single platform',pt:'<b>16 milhões</b> de eleitores em uma única plataforma'},p:{es:'Sistema de votación permanente para todo el padrón del estado de Gujarat.',en:'A permanent voting system for the entire voter roll of the state of Gujarat.',pt:'Sistema de votação permanente para todo o cadastro eleitoral do estado de Gujarat.'},w:{es:'Gujarat, India',en:'Gujarat, India',pt:'Gujarat, Índia'}},
  {when:'2024',pl:'B',h:{es:'<b>25</b> municipios votaron con Boleta Única Electrónica',en:'<b>25</b> municipalities voted with the Electronic Single Ballot',pt:'<b>25</b> municípios votaram com a Cédula Única Eletrônica'},p:{es:'Elecciones municipales en 25 cantones (así se llaman los municipios en Costa Rica) con BUE.',en:'Municipal elections in 25 cantons (as municipalities are called in Costa Rica) with BUE.',pt:'Eleições municipais em 25 cantões (como se chamam os municípios na Costa Rica) com a BUE.'},w:{es:'San José, Costa Rica',en:'San José, Costa Rica',pt:'San José, Costa Rica'}},
- {when:'2009–2025',pl:'BNO',h:{es:'<b>16 años</b> de voto electrónico en Salta',en:'<b>16 years</b> of electronic voting in Salta',pt:'<b>16 anos</b> de voto eletrônico em Salta'},p:{es:'Implementación integral de BUE, Recuento Provisorio y Notebox en la provincia, elección tras elección.',en:'End-to-end implementation of BUE, provisional count and Notebox in the province, election after election.',pt:'Implementação integral da BUE, contagem provisória e Notebox na província, eleição após eleição.'},w:{es:'Salta, Argentina',en:'Salta, Argentina',pt:'Salta, Argentina'}},
+ {when:'2009–2025',pl:'BNO',c:'caso-salta',h:{es:'<b>16 años</b> de voto electrónico en Salta',en:'<b>16 years</b> of electronic voting in Salta',pt:'<b>16 anos</b> de voto eletrônico em Salta'},p:{es:'Implementación integral de BUE, Recuento Provisorio y Notebox en la provincia, elección tras elección.',en:'End-to-end implementation of BUE, provisional count and Notebox in the province, election after election.',pt:'Implementação integral da BUE, contagem provisória e Notebox na província, eleição após eleição.'},w:{es:'Salta, Argentina',en:'Salta, Argentina',pt:'Salta, Argentina'}},
  {when:{es:'España',en:'Spain',pt:'Espanha'},pl:'I',h:{es:'<b>23</b> procesos electorales en Madrid',en:'<b>23</b> electoral processes in Madrid',pt:'<b>23</b> processos eleitorais em Madri'},p:{es:'Votaciones para instituciones como el Ayuntamiento de Madrid y la Guardia Civil.',en:'Votes for institutions such as Madrid City Council and the Guardia Civil.',pt:'Votações para instituições como a Prefeitura de Madri e a Guardia Civil.'},w:{es:'Madrid, España',en:'Madrid, Spain',pt:'Madri, Espanha'}}
 ];
 
@@ -1030,8 +1053,12 @@ function pager(list,idx,nameFn){
   var p=list[idx-1], n=list[idx+1];
   return '<nav class="pager">'+(p?'<a href="'+href(p.id)+'"><span class="label">← '+u('prev')+'</span><b>'+nameFn(p)+'</b></a>':'<span class="ph"></span>')+(n?'<a href="'+href(n.id)+'"><span class="label">'+u('next')+' →</span><b>'+nameFn(n)+'</b></a>':'<span class="ph"></span>')+'</nav>';
 }
-function msBlock(){
-  return '<div class="ms-grid">'+MS.map(function(m){ return '<article class="ms"><div class="ms-top"><span class="label">'+L(m.when)+'</span>'+pls(m.pl)+'</div><h3>'+L(m.h)+'</h3><p>'+L(m.p)+'</p><span class="where"><i></i>'+L(m.w)+'</span></article>'; }).join('')+'</div>';
+function msBlock(linkAll){
+  return '<div class="ms-grid">'+MS.map(function(m){
+    var to=m.c||(linkAll?'casos':null), tag=to?'a':'article';
+    var more=to?'<span class="tlink">'+(m.c?u('read_case'):u('all_cases'))+' <svg><use href="#arrow"/></svg></span>':'';
+    return '<'+tag+' class="ms'+(to?' ms-link':'')+'"'+(to?' href="'+href(to)+(m.c||SITE.mode!=='static'?'':'#explorer')+'"':'')+'><div class="ms-top"><span class="label">'+L(m.when)+'</span>'+pls(m.pl)+'</div><h3>'+L(m.h)+'</h3><p>'+L(m.p)+'</p><span class="where"><i></i>'+L(m.w)+'</span>'+more+'</'+tag+'>';
+  }).join('')+'</div>';
 }
 
 /* ===== Explorer ===== */
@@ -1056,7 +1083,7 @@ function xMap(){
   var reg=XREG.filter(function(r){return r.id===X.region;})[0];
   var bubs=list.map(function(x){
     var n=x.items.length, r=(6+3.2*Math.sqrt(n))*sc;
-    return '<g class="bub" tabindex="0" role="button" data-g="'+x.g.id+'" aria-label="'+esc(L(x.g.name)+': '+countLabel(n))+'"><circle cx="'+x.g.x+'" cy="'+x.g.y+'" r="'+r.toFixed(2)+'" stroke-width="'+(1.3*sc).toFixed(2)+'"/>'+(n>1?'<text x="'+x.g.x+'" y="'+x.g.y+'" font-size="'+(9.5*sc).toFixed(2)+'">'+n+'</text>':'')+'</g>';
+    return '<g class="bub" tabindex="0" role="button" data-g="'+x.g.id+'" aria-label="'+esc(L(x.g.name)+': '+countLabel(n))+'"><circle cx="'+x.g.x+'" cy="'+x.g.y+'" r="'+r.toFixed(2)+'" stroke-width="'+(1.3*sc).toFixed(2)+'"/>'+'<text x="'+x.g.x+'" y="'+x.g.y+'" font-size="'+(9.5*sc).toFixed(2)+'">'+n+'</text>'+'</g>';
   }).join('');
   return '<svg viewBox="'+vb.join(' ')+'" preserveAspectRatio="xMidYMid slice" role="img" aria-label="'+esc(L(reg.n))+'"><path class="land" d="'+LAND+'"/>'+bubs+'</svg><span class="crumb">'+(X.region==='world'?L(XREG[0].n):L(XREG[0].n)+' / '+L(reg.n))+'</span><span class="legend">'+u('x_legend')+'</span>';
 }
@@ -1105,7 +1132,7 @@ V.inicio=function(){
   credsBlock()+
   '<section class="blk"><div class="wrap">'+secHead(u('why_l'),u('why_h'),u('why_p'),arrowLink('como-trabajamos',u('nav_como')))+'<div class="body-grid"><div class="rail"></div><div>'+principlesBlock()+'</div></div></div></section>'+
   '<section class="blk alt"><div class="wrap">'+secHead(u('sol_l'),u('sol_h'),u('sol_p'),arrowLink('soluciones',u('all_sol')))+'<div class="sol-list">'+SOL.map(function(s){return solRow(s,true);}).join('')+'</div></div></section>'+
-  '<section class="blk"><div class="wrap">'+secHead(u('ms_l'),u('ms_h'),u('cs_p'),arrowLink('casos',u('all_cases')))+msBlock()+'</div></section>'+
+  '<section class="blk"><div class="wrap">'+secHead(u('ms_l'),u('ms_h'),u('cs_p'),arrowLink('casos',u('all_cases')))+msBlock(true)+'</div></section>'+
   '<section class="blk alt"><div class="wrap">'+secHead(u('fc_l'),u('cases_h'),u('cases_p'))+casesGrid()+'</div></section>'+
   '<section class="blk"><div class="wrap">'+secHead(u('gal_l'),u('gal_h'),u('gal_p'))+galleryBlock()+'</div></section>'+
   '<section class="blk alt"><div class="wrap">'+secHead(u('news_l'),u('news_h'),u('news_p'),arrowLink('noticias',u('all_news')))+'<div class="news-grid">'+NEWS.slice(0,3).map(newsCard).join('')+'</div></div></section>'+
@@ -1123,8 +1150,8 @@ function solView(s){
   var body=L(s.body).map(function(p){return '<p>'+p+'</p>';}).join('')+(s.list?'<ul class="bul">'+L(s.list).map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>':'');
   var pillars='<div class="pillars"><div><b>'+u('p_secure')+'</b><p>'+u('p_secure_t')+'</p></div><div><b>'+u('p_scal')+'</b><p>'+u('p_scal_t')+'</p></div><div><b>'+u('p_aud')+'</b><p>'+u('p_aud_t')+'</p></div></div>';
   var rel='';
-  if(s.cases.length){ rel+='<h2>'+u('related_cases')+'</h2><div class="sol-list">'+s.cases.map(function(id){var c=caseById(id);return '<article class="sol compact"><h3 style="font-size:20px"><a href="'+href(c.id)+'">'+L(c.title)+'</a><span class="full">'+L(c.place)+' · '+fmtDate(c.date)+'</span></h3><div class="desc">'+L(c.short)+'</div><div class="sol-links">'+arrowLink(c.id,u('read_case'))+'</div></article>';}).join('')+'</div>'; }
-  if(s.news.length){ rel+='<h2>'+u('related_news')+'</h2><div class="sol-list">'+s.news.map(function(sl){var n=newsBySlug(sl);return '<article class="sol compact"><h3 style="font-size:20px"><a href="'+newsUrl(n)+'">'+L(n.t)+'</a></h3><div class="desc">'+L(n.p)+'</div><div class="sol-links">'+arrowLink('nota-'+n.slug,u('read_art'))+'</div></article>';}).join('')+'</div>'; }
+  if(s.cases.length){ rel+='<h2>'+u('related_cases')+'</h2><div class="sol-list">'+s.cases.map(function(id){var c=caseById(id);return '<article class="sol compact">'+(CASE_IMG[c.id]?'<a class="sol-img photo" href="'+href(c.id)+'" tabindex="-1" aria-hidden="true">'+pic(CASE_IMG[c.id],'','160px')+'</a>':'<span></span>')+'<h3 style="font-size:20px"><a href="'+href(c.id)+'">'+L(c.title)+'</a><span class="full">'+L(c.place)+' · '+fmtDate(c.date)+'</span></h3><div class="desc">'+L(c.short)+'</div><div class="sol-links">'+arrowLink(c.id,u('read_case'))+'</div></article>';}).join('')+'</div>'; }
+  if(s.news.length){ rel+='<h2>'+u('related_news')+'</h2><div class="sol-list">'+s.news.map(function(sl){var n=newsBySlug(sl);return '<article class="sol compact"><a class="sol-img photo" href="'+newsUrl(n)+'" tabindex="-1" aria-hidden="true">'+pic(newsImg(n.slug),'','160px')+'</a><h3 style="font-size:20px"><a href="'+newsUrl(n)+'">'+L(n.t)+'</a></h3><div class="desc">'+L(n.p)+'</div><div class="sol-links">'+arrowLink('nota-'+n.slug,u('read_art'))+'</div></article>';}).join('')+'</div>'; }
   var ficha='<aside class="ficha"><h3>'+u('ficha')+'</h3><dl><dt>'+u('modality')+'</dt><dd>'+L(s.tag)+'</dd><dt>'+u('stages')+'</dt><dd>'+s.stages.map(function(i){return u('st'+i);}).join(' · ')+'</dd></dl><div class="links">'+ext(CC+sp(lang)+'/'+s.slug,u('official'))+'<a class="tlink sub" href="'+CC+'brochures/'+s.brochure+'" target="_blank" rel="noreferrer"><svg><use href="#dl"/></svg> '+u('brochure')+'</a></div></aside>';
   var SI=SOL_IMG[s.id], gal=SI&&SI.g.length?'<div class="pgallery">'+SI.g.map(function(p){ return lb(p,solName(s)+' · '+L(s.full),'(max-width:900px) 50vw, 340px'); }).join('')+'</div>':'';
   return phead([[u('nav_soluciones'),'soluciones'],[solName(s)]],L(s.tag),solName(s),L(s.desc),L(s.full))+(SI?band(SI.h,solName(s)+' · '+L(s.full)):'')+

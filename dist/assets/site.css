@@ -568,3 +568,26 @@ a:hover>.case-img img,a:hover>.news-img img,.nf-img img,.lb:hover img{will-chang
 .certs .badge{display:flex;width:fit-content;height:64px}
 @media (max-width:900px){.creds-groups{grid-template-columns:1fr}}
 @media (max-width:600px){.badge{height:46px}}
+/* Fixes: related rows, milestones */
+.sol-img.photo{background:var(--land);border:0}
+.sol-img.photo img{object-fit:cover;padding:0}
+.ms-top{flex-wrap:wrap;align-items:flex-start}
+.ms-top .label{white-space:nowrap;padding-top:6px}
+.ms-top .pls{justify-content:flex-end;margin-left:auto}
+a.ms-link{text-decoration:none;color:inherit;transition:background .2s}
+a.ms-link:hover{background:var(--surface)}
+a.ms-link:hover h3{color:var(--teal)}
+.ms .tlink{align-self:flex-start;margin-top:6px}
+.ms .where{margin-top:auto}
+.prose .sol.compact{grid-template-columns:120px minmax(0,1fr) auto;column-gap:22px;row-gap:6px;align-items:start}
+.prose .sol.compact .sol-img{grid-column:1;grid-row:1/span 2;align-self:start}
+.prose .sol.compact h3{grid-column:2;grid-row:1}
+.prose .sol.compact .desc{grid-column:2;grid-row:2;font-size:15.5px}
+.prose .sol.compact .sol-links{grid-column:3;grid-row:1/span 2}
+.prose .sol.compact h3,.prose .sol.compact .full{hyphens:auto;overflow-wrap:break-word}
+@media (max-width:640px){
+  .prose .sol.compact{grid-template-columns:88px minmax(0,1fr)}
+  .prose .sol.compact .desc,.prose .sol.compact .sol-links{grid-column:1/-1;grid-row:auto}
+  .prose .sol.compact .sol-img{grid-row:1}
+  .prose .sol.compact .sol-links{flex-direction:row}
+}
