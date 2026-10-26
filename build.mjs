@@ -83,6 +83,7 @@ ${FONTS}
 <style>${css}</style>
 ${SPRITE}
 <div id="app"></div>
+<script>var __SITE__={mode:'spa',base:'',img:${JSON.stringify(process.env.ARTIFACT_IMG_ORIGIN || ORIGIN + BASE)}};</script>
 <script>${code.replace(/<\/script/gi, '<\\/script')}</script>
 `;
 fs.mkdirSync('artifact', { recursive: true });
@@ -98,6 +99,7 @@ fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out + '/assets', { recursive: true });
 fs.writeFileSync(out + '/assets/site.css', css);
 for (const f of fs.readdirSync('src/icons')) fs.copyFileSync('src/icons/' + f, out + '/' + f);
+fs.cpSync('src/img', out + '/img', { recursive: true });
 fs.writeFileSync(out + '/site.webmanifest', JSON.stringify({ name: 'Comitia', short_name: 'Comitia', start_url: BASE + '/', display: 'browser', background_color: '#1E2740', theme_color: '#1E2740', icons: [{ src: BASE + '/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: BASE + '/icon-512.png', sizes: '512x512', type: 'image/png' }] }, null, 2));
 fs.writeFileSync(out + '/assets/app.js', code);
 const LOCALE = { es: 'es_AR', en: 'en_US', pt: 'pt_BR' };
@@ -114,7 +116,7 @@ for (const page of PAGES) {
     const body = ctx.chrome(page, ctx.viewHTML(page));
     if (/undefined|NaN/.test(body.replace(/typeof [a-zA-Z_]+!=='undefined'/g, ''))) { problems++; console.log('check', l, page); }
     const m = ctx.meta(page);
-    const ld = page === 'inicio' ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'Comitia', alternateName: 'Comitia | Grupo MSA', url: ORIGIN, logo: ORIGIN + '/logo.png', description: m.desc, parentOrganization: { '@type': 'Organization', name: 'Grupo MSA', url: 'https://www.msa.com.ar/' }, contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'contactus@comitiacorp.com', telephone: '+541160911540' } })}</script>` : '';
+    const ld = page === 'inicio' ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'Comitia', alternateName: 'Comitia | Grupo MSA', url: ORIGIN, logo: ORIGIN + BASE + '/icon-512.png', description: m.desc, parentOrganization: { '@type': 'Organization', name: 'Grupo MSA', url: 'https://www.msa.com.ar/' }, contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'contactus@comitiacorp.com', telephone: '+541160911540' } })}</script>` : '';
     const head = `<!doctype html>
 <html lang="${HTMLLANG[l]}">
 <head>
@@ -132,7 +134,8 @@ ${LANGS.map(x => `<link rel="alternate" hreflang="${HTMLLANG[x]}" href="${alts[x
 <meta property="og:url" content="${alts[l]}">
 <meta property="og:locale" content="${LOCALE[l]}">
 ${LANGS.filter(x => x !== l).map(x => `<meta property="og:locale:alternate" content="${LOCALE[x]}">`).join('\n')}
-<meta property="og:image" content="${ORIGIN}/comitia-og.jpg">
+<meta property="og:image" content="${m.img ? ORIGIN + BASE + '/img/' + m.img + '.webp' : ORIGIN + BASE + '/comitia-og.jpg'}">
+<meta name="twitter:card" content="summary_large_image">
 ${ICONS(BASE)}
 ${FONTS}
 <link rel="stylesheet" href="${BASE}/assets/site.css">
