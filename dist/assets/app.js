@@ -39,6 +39,11 @@ var U={
  gal_l:{es:'En el terreno',en:'In the field',pt:'Em campo'},
  gal_h:{es:'De la logística a la urna.',en:'From logistics to the ballot box.',pt:'Da logística à urna.'},
  gal_p:{es:'Equipos, centros de cómputos y votantes: así se ve una elección con Comitia.',en:'Equipment, data centers and voters: this is what an election with Comitia looks like.',pt:'Equipamentos, centros de apuração e eleitores: assim é uma eleição com a Comitia.'},
+ vid_l:{es:'Comitia en acción',en:'Comitia in action',pt:'Comitia em ação'},
+ vid_h:{es:'Una elección, de punta a punta.',en:'An election, from start to finish.',pt:'Uma eleição, do início ao fim.'},
+ vid_p:{es:'Producción de equipos, logística, capacitación, jornada electoral y centro de cómputos.',en:'Equipment production, logistics, training, election day and the data center.',pt:'Produção de equipamentos, logística, capacitação, dia da eleição e centro de apuração.'},
+ vid_play:{es:'Reproducir',en:'Play',pt:'Reproduzir'},
+ vid_pause:{es:'Pausar',en:'Pause',pt:'Pausar'},
  why_l:{es:'Por qué Comitia',en:'Why Comitia',pt:'Por que a Comitia'},
  why_h:{es:'Tecnología pensada para elecciones reales.',en:'Technology built for real-world elections.',pt:'Tecnologia pensada para eleições reais.'},
  why_p:{es:'Trabajamos con gobiernos y organismos electorales. Adaptamos cada solución al marco legal, la logística y los desafíos concretos de cada proceso.',en:'We work with governments and electoral bodies, adapting each solution to the legal framework, logistics and specific challenges of every process.',pt:'Trabalhamos com governos e órgãos eleitorais, adaptando cada solução ao marco legal, à logística e aos desafios concretos de cada processo.'},
@@ -411,6 +416,24 @@ var GAL=[
 function galleryBlock(){
   return '<div class="mosaic">'+GAL.map(function(g,i){ return '<figure class="m'+i+'">'+lb(g[0],L(g[1]),i===0?'(max-width:900px) 100vw, 50vw':'(max-width:900px) 50vw, 25vw')+'<figcaption>'+L(g[1])+'</figcaption></figure>'; }).join('')+'</div>';
 }
+var VIDB=IMGB.replace(/img\/$/,'video/');
+function videoBlock(){
+  return '<section class="blk vid-sec"><div class="wrap">'+secHead(u('vid_l'),u('vid_h'),u('vid_p'))+
+  '<figure class="vid"><video id="homeVid" muted loop playsinline preload="none" poster="'+IMGB+'video-home-poster.webp" aria-label="'+esc(strip(u('vid_h')))+'"><source src="'+VIDB+'home.mp4" type="video/mp4"></video>'+
+  '<button type="button" class="vid-btn" id="vidBtn" aria-pressed="false"><span class="i-play" aria-hidden="true"></span><span class="i-pause" aria-hidden="true"></span><span class="t">'+u('vid_play')+'</span></button></figure></div></section>';
+}
+function bindVideo(){
+  var v=document.getElementById('homeVid'), b=document.getElementById('vidBtn'); if(!v||!b) return;
+  var user=null, reduce=false; try{ reduce=matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  function sync(){ var on=!v.paused; b.setAttribute('aria-pressed',String(on)); b.classList.toggle('on',on); b.querySelector('.t').textContent=on?u('vid_pause'):u('vid_play'); }
+  function play(){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+  v.addEventListener('play',sync); v.addEventListener('pause',sync);
+  b.addEventListener('click',function(){ if(v.paused){ user=true; play(); } else { user=false; v.pause(); } });
+  v.addEventListener('click',function(){ b.click(); });
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ if(user!==false&&(user||!reduce)) play(); } else if(!v.paused) v.pause(); }); },{threshold:.35}).observe(v);
+  }
+}
 function band(p,alt,pos){ return '<div class="band"><div class="wrap"><figure class="band-fig">'+pic(p,alt,'(max-width:1240px) 100vw, 1240px',true,pos)+'</figure></div></div>'; }
 
 var CERT_LOGOS=[['iso-27001','ISO/IEC 27001:2022'],['iso-27701','ISO/IEC 27701:2019'],['tuv','TÜV Rheinland · ISO 9001, 27001, 27701'],['iram','IRAM · Gestión de la calidad']];
@@ -524,6 +547,7 @@ V.inicio=function(){
   '<div class="facts"><div class="wrap"><div class="fact"><b class="num">'+L(NUM.big)+'</b><span>'+u('f1')+'</span></div><div class="fact"><b class="num">'+L(NUM.voters)+'</b><span>'+u('f2')+'</span></div><div class="fact"><b class="num">28</b><span>'+u('s_countries')+'</span></div><div class="fact"><b class="num">27</b><span>'+u('s_years')+'</span></div></div></div></section>'+
   credsBlock()+
   '<section class="blk"><div class="wrap">'+secHead(u('why_l'),u('why_h'),u('why_p'),arrowLink('como-trabajamos',u('nav_como')))+'<div class="body-grid"><div class="rail"></div><div>'+principlesBlock()+'</div></div></div></section>'+
+  videoBlock()+
   '<section class="blk alt"><div class="wrap">'+secHead(u('sol_l'),u('sol_h'),u('sol_p'),arrowLink('soluciones',u('all_sol')))+'<div class="sol-list">'+SOL.map(function(s){return solRow(s,true);}).join('')+'</div></div></section>'+
   '<section class="blk"><div class="wrap">'+secHead(u('ms_l'),u('ms_h'),u('cs_p'),arrowLink('casos',u('all_cases')))+msBlock(true)+'</div></section>'+
   '<section class="blk alt"><div class="wrap">'+secHead(u('fc_l'),u('cases_h'),u('cases_p'))+casesGrid()+'</div></section>'+
@@ -698,6 +722,7 @@ function bind(page){
     navEl.addEventListener('click', function(e){ if(e.target.closest('a')){ navEl.classList.remove('open'); mb.setAttribute('aria-expanded','false'); } }); }
   if(page==='inicio' && !sealDone) setTimeout(function(){ sealDone=true; },2600);
   if(page==='nosotros') bindMap();
+  if(page==='inicio') bindVideo();
   if(page==='casos') bindExplorer();
   if(page==='noticias'){
     document.getElementById('filters').addEventListener('click', function(e){

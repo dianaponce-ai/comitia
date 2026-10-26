@@ -596,3 +596,40 @@ a.ms-link:hover h3{color:var(--teal)}
 .brand svg{width:auto;height:30px;display:block}
 .foot .brand svg{height:28px}
 @media (max-width:600px){.brand svg{height:24px}}
+
+/* ===== Video ===== */
+.vid{margin:0;position:relative;overflow:hidden;background:#0E1322;aspect-ratio:16/9}
+.vid video{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer}
+.vid-btn{position:absolute;left:18px;bottom:18px;display:inline-flex;align-items:center;gap:10px;padding:10px 16px 10px 12px;border:0;border-radius:999px;background:rgba(14,19,34,.72);color:#fff;font:600 14px/1 var(--body);cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .2s}
+.vid-btn:hover,.vid-btn:focus-visible{background:rgba(14,19,34,.9)}
+.vid-btn .i-play{width:0;height:0;border-left:11px solid currentColor;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:4px}
+.vid-btn .i-pause{display:none;width:11px;height:13px;border-left:4px solid currentColor;border-right:4px solid currentColor}
+.vid-btn.on .i-play{display:none}.vid-btn.on .i-pause{display:block}
+@media (max-width:600px){.vid{aspect-ratio:4/3}.vid-btn{left:10px;bottom:10px}}
+
+/* ===== Rounded media ===== */
+:root{--r-media:12px}
+.sol-img,.case-img,.news-img,.step-img .lb,.nf-img,.band-fig,.mosaic figure,.mosaic .lb,.pgallery .lb,.about-photos .lb,.vid,.lbox img{border-radius:var(--r-media);overflow:hidden}
+.sol-img{border-radius:8px}
+.lb::after{border-radius:inherit}
+.case-img{margin:0 0 4px}
+.case{padding:22px}
+.case-meta{padding-top:2px}
+.news-feat{border-radius:var(--r-media);overflow:hidden}
+.news-feat .nf-img{border-radius:0}
+@media (max-width:900px){.case-img{margin:0 0 4px}.case{padding:20px}}
+
+/* ===== Rounded buttons & controls ===== */
+:root{--r-btn:8px}
+.btn,.menu-btn,.x-empty button,.ready button,.copy,.vid-btn{border-radius:var(--r-btn)}
+.vid-btn{border-radius:999px}
+.filters,.x-tabs,.lang{border-radius:var(--r-btn);overflow:hidden}
+.lang{border-radius:6px}
+.pl,.x-plats button.pl,.tag{border-radius:6px}
+.field input,.field select,.field textarea,.x-search input{border-radius:var(--r-btn)}
+.lbox button{border-radius:50%}
+.rcard{border-radius:var(--r-media);overflow:hidden}
+.ficha,.matrix-wrap,.badge{border-radius:var(--r-btn)}
+.ficha{overflow:hidden}
+form.cf{border-radius:var(--r-media)}
+.tlink:focus-visible,.btn:focus-visible{outline-offset:3px}

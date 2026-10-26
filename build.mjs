@@ -101,6 +101,7 @@ fs.mkdirSync(out + '/assets', { recursive: true });
 fs.writeFileSync(out + '/assets/site.css', css);
 for (const f of fs.readdirSync('src/icons')) fs.copyFileSync('src/icons/' + f, out + '/' + f);
 fs.cpSync('src/img', out + '/img', { recursive: true });
+fs.cpSync('src/video', out + '/video', { recursive: true });
 fs.writeFileSync(out + '/site.webmanifest', JSON.stringify({ name: 'Comitia', short_name: 'Comitia', start_url: BASE + '/', display: 'browser', background_color: '#1E2740', theme_color: '#1E2740', icons: [{ src: BASE + '/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: BASE + '/icon-512.png', sizes: '512x512', type: 'image/png' }] }, null, 2));
 fs.writeFileSync(out + '/assets/app.js', code);
 const LOCALE = { es: 'es_AR', en: 'en_US', pt: 'pt_BR' };
