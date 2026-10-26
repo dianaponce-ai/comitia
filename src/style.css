@@ -591,3 +591,8 @@ a.ms-link:hover h3{color:var(--teal)}
   .prose .sol.compact .sol-img{grid-row:1}
   .prose .sol.compact .sol-links{flex-direction:row}
 }
+/* Real Comitia logo */
+.brand{color:var(--ink)}
+.brand svg{width:auto;height:30px;display:block}
+.foot .brand svg{height:28px}
+@media (max-width:600px){.brand svg{height:24px}}
