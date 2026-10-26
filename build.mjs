@@ -62,6 +62,7 @@ const code = [
   fs.readFileSync('src/prelude.js', 'utf8'),
   fs.readFileSync('src/data-core.js', 'utf8'),
   'var NB=' + JSON.stringify(NB) + ';',
+  'var LOGOS=' + JSON.stringify(Object.fromEntries(fs.readdirSync('src/logos').filter(f => f.endsWith('.svg')).map(f => [f.slice(0, -4), fs.readFileSync('src/logos/' + f, 'utf8').replace(/\s*\n\s*/g, ' ')]))) + ';',
   'var LOC=' + JSON.stringify(LOC) + ';var VB=' + JSON.stringify(VB) + ';var LAND_PTS=' + JSON.stringify(LAND_PTS) + ';var LAND=' + JSON.stringify(LAND) + ';',
   fs.readFileSync('src/app.js', 'utf8')
 ].join('\n');

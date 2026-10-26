@@ -165,11 +165,15 @@ function galleryBlock(){
 }
 function band(p,alt,pos){ return '<div class="band"><div class="wrap"><figure class="band-fig">'+pic(p,alt,'(max-width:1240px) 100vw, 1240px',true,pos)+'</figure></div></div>'; }
 
+var CERT_LOGOS=[['iso-27001','ISO/IEC 27001:2022'],['iso-27701','ISO/IEC 27701:2019'],['tuv','TÜV Rheinland · ISO 9001, 27001, 27701'],['iram','IRAM · Gestión de la calidad']];
+var PARTNERS=[['aws','Amazon Web Services'],['intel','Intel'],['st','STMicroelectronics']];
+function badge(id,alt){ return '<span class="badge b-'+id+'"><img src="'+IMGB+'logos/'+id+'.webp" alt="'+esc(alt)+'" title="'+esc(alt)+'" loading="lazy" decoding="async"></span>'; }
+
 /* ===== Blocks ===== */
 function credsBlock(){
   return '<section class="creds" aria-label="'+u('creds')+'"><div class="wrap"><p class="label">'+u('creds')+'</p><div class="creds-groups">'+
-  '<div class="creds-group"><span class="label">'+u('certs_l')+'</span><span class="cred num">ISO/IEC 27001:2022<small>'+u('c27001')+'</small></span><span class="cred num">ISO/IEC 27701:2019<small>'+u('c27701')+'</small></span><span class="cred">TÜV<small>'+u('ctuv')+'</small></span></div>'+
-  '<div class="creds-group"><span class="label">'+u('partners_l')+'</span><span class="cred">Amazon Web Services</span><span class="cred">Intel</span><span class="cred">STMicroelectronics</span></div></div></div></section>';
+  '<div class="creds-group"><span class="label">'+u('certs_l')+'</span><div class="badges">'+CERT_LOGOS.map(function(c){ return badge(c[0],c[1]); }).join('')+'</div></div>'+
+  '<div class="creds-group"><span class="label">'+u('partners_l')+'</span><div class="partner-logos">'+PARTNERS.map(function(p){ return '<span class="plogo '+p[0]+'" role="img" aria-label="'+p[1]+'" title="'+p[1]+'">'+LOGOS[p[0]]+'</span>'; }).join('')+'</div></div></div></div></section>';
 }
 function principlesBlock(){
   return '<div class="principles">'+PR.map(function(p){ return '<div class="pr"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">'+p.i+'</svg><h3>'+L(p.h)+'</h3><p>'+L(p.p)+'</p></div>'; }).join('')+'</div>';
@@ -366,7 +370,7 @@ V.nosotros=function(){
   '<div class="about-photos">'+lb(GAL[5][0],L(GAL[5][1]),'(max-width:900px) 100vw, 60vw','a-big')+lb(GAL[1][0],L(GAL[1][1]),'(max-width:900px) 100vw, 40vw')+lb(GAL[3][0],L(GAL[3][1]),'(max-width:900px) 100vw, 40vw')+'</div>'+
   secHead(u('offices_l'),u('offices_h'),'')+
   '<div class="atlas"><div class="map"><div class="map-in" id="mapIn"><svg viewBox="0 0 1000 470" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+u('offices_l')+'"><path class="land" d="'+LAND+'"/></svg>'+officePins()+'</div><div class="map-foot"><span><i class="hq"></i>'+u('hq')+'</span><span><i></i>'+u('office')+'</span><span>'+u('map_hint')+'</span></div></div><div class="offices" id="offices">'+officesList()+'</div></div></div></section>'+
-  '<section class="blk"><div class="wrap">'+secHead(u('certs_sec_l'),u('certs_sec_h'),'')+'<div class="body-grid"><div class="rail"></div><div class="certs"><div><b class="num">ISO/IEC 27001:2022</b><p>'+u('c1p')+'</p></div><div><b class="num">ISO/IEC 27701:2019</b><p>'+u('c2p')+'</p></div><div><b>TÜV</b><p>'+u('c3p')+'</p></div></div></div>'+
+  '<section class="blk"><div class="wrap">'+secHead(u('certs_sec_l'),u('certs_sec_h'),'')+'<div class="body-grid"><div class="rail"></div><div class="certs"><div>'+badge('iso-27001','ISO/IEC 27001:2022')+'<b class="num">ISO/IEC 27001:2022</b><p>'+u('c1p')+'</p></div><div>'+badge('iso-27701','ISO/IEC 27701:2019')+'<b class="num">ISO/IEC 27701:2019</b><p>'+u('c2p')+'</p></div><div>'+badge('tuv','TÜV Rheinland')+'<b>TÜV</b><p>'+u('c3p')+'</p></div></div></div>'+
   '<div class="body-grid" style="margin-top:56px;padding-top:28px;border-top:1px solid var(--rule)"><p class="label">Grupo MSA</p><p style="max-width:700px;color:var(--muted)">'+u('msa_t')+'</p></div></div></section>'+
   ctaBand(u('contact_h'),u('contact_p'),u('cta_team'));
 };

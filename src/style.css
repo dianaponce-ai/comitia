@@ -550,3 +550,21 @@ a:hover>.case-img img,a:hover>.news-img img,.nf-img img,.lb:hover img{will-chang
 .step-img .lb{aspect-ratio:auto;height:150px}
 @media (max-width:1000px){.step-img .lb{height:auto;aspect-ratio:16/9}}
 .pgallery .lb:first-child:nth-last-child(odd){grid-column:1/-1;aspect-ratio:2/1}
+
+/* ===== Logos ===== */
+.creds-groups{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:start}
+.badges{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.badge{display:inline-flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--rule);height:58px;padding:5px 8px}
+.badge img{height:100%;width:auto;display:block}
+.badge.b-iram{padding:4px 10px}
+.partner-logos{display:flex;flex-wrap:wrap;gap:12px 34px;align-items:center;min-height:58px}
+.plogo{display:inline-flex;color:var(--muted);transition:color .2s}
+.plogo:hover{color:var(--ink)}
+.plogo svg{height:38px;width:auto;display:block}
+.plogo.st svg{height:30px}
+.certs .badge{height:64px;margin-bottom:18px}
+@media (max-width:600px){.badge{height:48px}.plogo svg{height:32px}.plogo.st svg{height:26px}.partner-logos{gap:12px 26px}}
+.badge{height:50px;padding:4px 7px}
+.certs .badge{display:flex;width:fit-content;height:64px}
+@media (max-width:900px){.creds-groups{grid-template-columns:1fr}}
+@media (max-width:600px){.badge{height:46px}}
