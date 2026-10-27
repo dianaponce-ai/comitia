@@ -69,5 +69,5 @@ Después de publicar, dar de alta `https://comitiacorp.com/sitemap.xml` en Googl
 
 ## Portugués y secciones beta
 
-- El sitio completo está también en portugués (`/pt/...`, textos en `src/locales/pt.json` y en los `pt` de `src/content/*.json`). Los textos legales en portugués son traducciones de trabajo: conviene que Legales los revise. Los brochures en portugués enlazan los PDF en español.
+- El sitio completo está también en portugués (`/pt/...`, textos en `src/locales/pt.json` y en los `pt` de `src/content/*.json`). Los textos legales (Aviso de Privacidad, Aviso Legal y Política de Cookies) son la versión del 26/10/2026: el español es el texto aprobado por Legales y el inglés y el portugués son traducciones literales y completas de ese texto, con los enlaces entre documentos dentro del mismo idioma. Los brochures en portugués enlazan los PDF en español.
 - **Mapa de casos** (`/{es|en|pt}/mapa-de-casos`) y **Nosotros** (`/{es|en|pt}/nosotros`) están marcadas como beta (★ Beta en el menú), con `noindex` y fuera del sitemap. Su contenido vive en `src/beta.mjs`, las ubicaciones en `src/content/locations.mjs`, los estilos en `src/styles/beta.css` y la interacción en `src/client/beta.js`. Para publicarlas como definitivas: quitar `noindex` en `META` de `src/beta.mjs` y el filtro `!r.beta` del sitemap en `build.mjs`.

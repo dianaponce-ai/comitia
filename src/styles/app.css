@@ -803,7 +803,7 @@ button.btn {
   background-image: url(assets/img/buttons/download-02.svg);
 }
 
-/* language selector */
+/* language selector (rayita entre todas las iniciales: ES | EN | PT) */
 .language-selector {
   padding: 0;
   margin: 0;
@@ -816,7 +816,7 @@ button.btn {
   line-height: 1;
 }
 
-.language-selector li:first-child {
+.language-selector li:not(:last-child) {
   border-right: 1px solid var(--blue-grey-500);
   padding-right: 4px;
 }
@@ -850,10 +850,10 @@ button.btn {
   .siteHeader.home.scrolled .language-btn:hover {
     color: var(--blue-grey-800);
   }
-  .siteHeader.home .language-selector li:first-child {
+  .siteHeader.home .language-selector li:not(:last-child) {
     border-right: 1px solid var(--white);
   }
-  .siteHeader.home.scrolled .language-selector li:first-child {
+  .siteHeader.home.scrolled .language-selector li:not(:last-child) {
     border-right: 1px solid var(--blue-grey-500);
   }
 }

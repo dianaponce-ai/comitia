@@ -288,7 +288,7 @@ export const nota = (c, x) => article(c, x, 'blog', 'blog-back-to');
 export function legal(c, doc) {
   const d = LEGAL[c.lang][doc];
   // Las referencias cruzadas usan rutas absolutas (/es/...): se ajustan al base del sitio
-  const html = c.base ? d.html.replace(/href="\/(es|en)\//g, `href="${c.base}/$1/`) : d.html;
+  const html = c.base ? d.html.replace(/href="\/(es|en|pt)\//g, `href="${c.base}/$1/`) : d.html;
   return `<main class="main-container"><section class="news-hero legal-hero"><h1 class="fw-600 lh-120">${esc(d.title)}</h1></section><article class="legal-content">${html}</article></main>`;
 }
 
