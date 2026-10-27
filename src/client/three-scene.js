@@ -16,9 +16,10 @@ export function mountScene(container, cfg, driver, onReady) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   if (cfg.controlled) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.domElement.style.display = 'block';
   container.appendChild(renderer.domElement);
   let dirtyRef = null;
-  const resize = () => { const w = container.offsetWidth, h = container.offsetHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); if (dirtyRef) dirtyRef(); };
+  const resize = () => { const w = container.offsetWidth, h = container.offsetHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); if (dirtyRef) dirtyRef(); };
   new ResizeObserver(resize).observe(container); window.addEventListener('resize', resize);
 
   let mixer = null, screenMat = null, logoMat = null, bue = false; const actions = [];
