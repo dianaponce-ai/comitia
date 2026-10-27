@@ -1,0 +1,24 @@
+/* ===== Ajustes del sitio estático (no cambian el diseño) ===== */
+/* Los listados ahora usan <h1> (antes <h2>): mismo estilo */
+.news-hero:not(.legal-hero) h1 {
+  font-size: clamp(36px, 31.775px + 1.127vw, 48px);
+  margin: 12px 0 24px;
+  color: var(--blue-grey-900);
+}
+@media (min-width: 744px) {
+  .news-hero:not(.legal-hero) h1 { text-align: center; }
+}
+/* Paginación en cliente */
+[hidden] { display: none !important; }
+/* Acceso por teclado a la galería y marcadores */
+.gallery-grid [data-gallery]:focus-visible,
+.map-marker-v2:focus-visible { outline: 2px solid var(--brand-blue-500, #1570ef); outline-offset: 2px; }
+.contact-video video, .home-hero-video-v2 video { background: #0b1220; }
+/* Las fotos llevan width/height (evita saltos de layout); el alto se calcula
+   por proporción salvo que el CSS original fije otro */
+:where(img[width][height]) { height: auto; }
+/* Corrección: en mobile el texto del hero se salía 16px por la derecha
+   (generaba scroll horizontal en la home) */
+@media (max-width: 744px) {
+  .home-hero-text-v2 { max-width: calc(100% - 2 * clamp(16px, -3.718px + 5.258vw, 72px)); }
+}

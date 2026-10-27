@@ -1,0 +1,30 @@
+{
+ "inicio": {
+  "title": "COMITIA | Secure and scalable electoral technology",
+  "desc": "COMITIA provides secure, auditable electronic voting platforms adapted to elections around the world."
+ },
+ "bue": {
+  "title": "BUE | Secure and auditable electronic ballot | COMITIA",
+  "desc": "Electronic ballot system with printing and RFID chip that ensures transparency, accuracy and control in electoral processes."
+ },
+ "notebox": {
+  "title": "Notebox | Real-time polling station management | COMITIA",
+  "desc": "Electoral management system that assists polling station officials with real-time information, biometrics and faster, safer and more efficient processes."
+ },
+ "turing": {
+  "title": "Turing | Real-time election results | COMITIA",
+  "desc": "Electoral transmission system that digitizes tally sheets and validates results in real time with AI, reducing errors and ensuring transparency and security."
+ },
+ "invote": {
+  "title": "Secure and verifiable online voting | Invote COMITIA",
+  "desc": "Online voting system that allows remote voting with security, privacy and full verification of the electoral process."
+ },
+ "soe": {
+  "title": "Electoral information and online training | SOE COMITIA",
+  "desc": "Electoral information and training solutions with platforms to educate voters, train officials and publish results."
+ },
+ "eos": {
+  "title": "Electoral Operations System | Real-time management COMITIA",
+  "desc": "Platform to manage and monitor electoral processes in real time with traceability, control and centralized data."
+ }
+}

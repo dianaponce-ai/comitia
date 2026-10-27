@@ -1,19 +1,22 @@
 {
   "name": "comitia-sitio",
-  "version": "1.0.0",
-  "description": "Sitio corporativo de Comitia en ES/EN/PT",
+  "version": "2.0.0",
+  "description": "Sitio de Comitia (comitiacorp.com) — HTML estático por página, ES/EN, mismo diseño y contenido que el sitio React anterior",
+  "private": true,
+  "type": "module",
   "scripts": {
     "build": "node build.mjs",
-    "build:pages": "SITE_ORIGIN=https://dianaponce-ai.github.io SITE_BASE=/comitia node build.mjs",
-    "test": "node test.mjs"
+    "build:pages": "SITE_BASE=/comitia node build.mjs",
+    "serve": "node scripts/serve.mjs dist 4173",
+    "test": "node scripts/check.mjs"
   },
   "dependencies": {
-    "d3-geo": "^3.1.1",
-    "topojson-client": "^3.1.0",
-    "world-atlas": "^2.0.2"
+    "@floating-ui/dom": "1.7.4",
+    "@splidejs/splide": "4.1.4",
+    "esbuild": "0.25.10",
+    "gsap": "3.13.0",
+    "sharp": "0.34.4",
+    "three": "0.179.1"
   },
-  "private": true,
-  "devDependencies": {
-    "jsdom": "^24.1.3"
-  }
+  "devDependencies": {}
 }

@@ -1,0 +1,301 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "destination": "/es",
+      "permanent": false
+    },
+    {
+      "source": "/como-trabajamos",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/como-trabajamos",
+      "permanent": false
+    },
+    {
+      "source": "/como-trabajamos",
+      "destination": "/es/como-trabajamos",
+      "permanent": false
+    },
+    {
+      "source": "/casos",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/casos",
+      "permanent": false
+    },
+    {
+      "source": "/casos",
+      "destination": "/es/casos",
+      "permanent": false
+    },
+    {
+      "source": "/casos/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/casos/:slug",
+      "permanent": false
+    },
+    {
+      "source": "/casos/:slug",
+      "destination": "/es/casos/:slug",
+      "permanent": false
+    },
+    {
+      "source": "/blog",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/blog",
+      "permanent": false
+    },
+    {
+      "source": "/blog",
+      "destination": "/es/blog",
+      "permanent": false
+    },
+    {
+      "source": "/blog/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/blog/:slug",
+      "permanent": false
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/es/blog/:slug",
+      "permanent": false
+    },
+    {
+      "source": "/notebox",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/notebox",
+      "permanent": false
+    },
+    {
+      "source": "/notebox",
+      "destination": "/es/notebox",
+      "permanent": false
+    },
+    {
+      "source": "/bue",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/bue",
+      "permanent": false
+    },
+    {
+      "source": "/bue",
+      "destination": "/es/bue",
+      "permanent": false
+    },
+    {
+      "source": "/turing",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/turing",
+      "permanent": false
+    },
+    {
+      "source": "/turing",
+      "destination": "/es/turing",
+      "permanent": false
+    },
+    {
+      "source": "/invote",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/invote",
+      "permanent": false
+    },
+    {
+      "source": "/invote",
+      "destination": "/es/invote",
+      "permanent": false
+    },
+    {
+      "source": "/soe",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/soe",
+      "permanent": false
+    },
+    {
+      "source": "/soe",
+      "destination": "/es/soe",
+      "permanent": false
+    },
+    {
+      "source": "/sistema-operaciones-electorales",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/sistema-operaciones-electorales",
+      "permanent": false
+    },
+    {
+      "source": "/sistema-operaciones-electorales",
+      "destination": "/es/sistema-operaciones-electorales",
+      "permanent": false
+    },
+    {
+      "source": "/aviso-de-privacidad",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/aviso-de-privacidad",
+      "permanent": false
+    },
+    {
+      "source": "/aviso-de-privacidad",
+      "destination": "/es/aviso-de-privacidad",
+      "permanent": false
+    },
+    {
+      "source": "/aviso-legal",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/aviso-legal",
+      "permanent": false
+    },
+    {
+      "source": "/aviso-legal",
+      "destination": "/es/aviso-legal",
+      "permanent": false
+    },
+    {
+      "source": "/politica-de-cookies",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept-language",
+          "value": "en.*"
+        }
+      ],
+      "destination": "/en/politica-de-cookies",
+      "permanent": false
+    },
+    {
+      "source": "/politica-de-cookies",
+      "destination": "/es/politica-de-cookies",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(img|casos/images|blog/images|video|assets/3d)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    }
+  ]
+}

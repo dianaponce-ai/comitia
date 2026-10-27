@@ -1,0 +1,871 @@
+{
+ "inicio": {
+  "title": "COMITIA | Tecnología electoral segura y escalable",
+  "desc": "COMITIA ofrece plataformas de voto electrónico seguras, auditables y adaptadas a elecciones en todo el mundo.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "Organization",
+     "@id": "https://comitiacorp.com/#organization",
+     "name": "Comitia",
+     "alternateName": "Comitia | Grupo MSA",
+     "description": "Plataformas digitales seguras, escalables y auditables para elecciones en todo el mundo.",
+     "url": "https://comitiacorp.com",
+     "logo": "https://comitiacorp.com/logo.png",
+     "areaServed": [
+      "Argentina",
+      "Paraguay",
+      "Ecuador",
+      "Honduras",
+      "Costa Rica",
+      "Uruguay",
+      "United States",
+      "Canada",
+      "Spain",
+      "United Arab Emirates",
+      "South Africa"
+     ],
+     "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "email": "contactus@comitiacorp.com",
+      "telephone": "+541160911540"
+     }
+    },
+    {
+     "@type": "WebSite",
+     "@id": "https://comitiacorp.com/#website",
+     "name": "Comitia | Tecnología Electoral",
+     "url": "https://comitiacorp.com",
+     "publisher": {
+      "@id": "https://comitiacorp.com/#organization"
+     }
+    },
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/#webpage",
+     "url": "https://comitiacorp.com",
+     "name": "Comitia | Tecnología al servicio de la democracia",
+     "description": "Plataformas digitales seguras, escalables y auditables para elecciones en todo el mundo. Boleta Única Electrónica, votación online, escrutinio digital y más.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/#organization"
+     }
+    },
+    {
+     "@type": "Service",
+     "name": "Boleta Única Electrónica (BUE)",
+     "description": "Sistema de Boleta Única Electrónica para elecciones presenciales.",
+     "provider": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/bue",
+     "serviceType": "Tecnología Electoral"
+    },
+    {
+     "@type": "Service",
+     "name": "Notebox",
+     "description": "Sistema integral de gestión para una mesa de votación.",
+     "provider": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/notebox",
+     "serviceType": "Tecnología Electoral"
+    },
+    {
+     "@type": "Service",
+     "name": "Turing",
+     "description": "Tecnología electoral para el escrutinio y totalización de resultados.",
+     "provider": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/turing",
+     "serviceType": "Tecnología Electoral"
+    },
+    {
+     "@type": "Service",
+     "name": "Invote",
+     "description": "Software de votación online para elecciones remotas.",
+     "provider": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/invote",
+     "serviceType": "Tecnología Electoral"
+    },
+    {
+     "@type": "Service",
+     "name": "Sistema de Operaciones Electorales",
+     "description": "Sistema de centralización de información y seguimiento para procesos electorales.",
+     "provider": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/sistema-operaciones-electorales",
+     "serviceType": "Tecnología Electoral"
+    }
+   ]
+  }
+ },
+ "bue": {
+  "title": "BUE | Boleta electrónica segura y auditable | COMITIA",
+  "desc": "Sistema de boleta electrónica con impresión y chip RFID que garantiza transparencia, precisión y control en procesos electorales.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/bue#webpage",
+     "url": "https://comitiacorp.com/bue",
+     "name": "BUE | Sistema de Boleta Única Electrónica | Comitia",
+     "description": "Sistema de boleta electrónica que permite al votante seleccionar su opción en pantalla táctil, imprimir su voto y registrar la información en un chip RFID. Votación segura, transparente y auditable.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/bue#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/bue#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/bue#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Boleta Única Electrónica (BUE)",
+       "item": "https://comitiacorp.com/bue"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/bue#product",
+     "name": "BUE | Boleta Única Electrónica",
+     "description": "Sistema de boleta electrónica que permite al votante seleccionar su opción en pantalla táctil, imprimir su voto y registrar la información en un chip RFID, garantizando precisión, secreto y auditabilidad.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/bue",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Interfaz",
+       "value": "Pantalla táctil intuitiva para selección de candidatos"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Registro del voto",
+       "value": "Impresión física en boleta y registro digital en chip RFID"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Verificación",
+       "value": "Verificación visual del voto antes de emitirlo"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Auditabilidad",
+       "value": "Auditoría electrónica y manual del resultado"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Almacenamiento",
+       "value": "La máquina no almacena datos, todo queda en la boleta"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Accesibilidad",
+       "value": "Diseño universal que permite el voto independiente y secreto de cualquier ciudadano"
+      }
+     ]
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/bue#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es la Boleta Única Electrónica (BUE)?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Es un sistema de votación electrónica que permite al votante seleccionar candidatos en una pantalla táctil, imprimir su voto en una boleta física y registrar la información en un chip RFID, garantizando precisión, secreto del voto y auditabilidad completa."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿La máquina de votación almacena los votos?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. La máquina no almacena ningún dato. El voto se imprime físicamente y se registra digitalmente en la boleta. Toda la información puede auditarse tanto electrónicamente como de forma manual."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿El sistema BUE es compatible con distintos marcos normativos?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. El sistema tiene un diseño universal y accesible, compatible con distintos marcos normativos y procedimientos electorales existentes."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "notebox": {
+  "title": "Notebox | Gestión de mesas electorales en tiempo real | COMITIA",
+  "desc": "Sistema de gestión electoral que asiste a autoridades de mesa con información en tiempo real, biometría y procesos más ágiles, seguros y eficientes.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/notebox#webpage",
+     "url": "https://comitiacorp.com/notebox",
+     "name": "Notebox | Sistema de gestión para mesas electorales | Comitia",
+     "description": "Sistema de gestión integral para mesas de votación que asiste a autoridades de mesa en tiempo real, mejora la experiencia del votante y permite decisiones instantáneas por parte de organismos electorales.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/notebox#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/notebox#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/notebox#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Notebox",
+       "item": "https://comitiacorp.com/notebox"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/notebox#product",
+     "name": "Notebox | Sistema de gestión para mesas electorales",
+     "description": "Sistema de gestión para mesas electorales que asiste a las autoridades de mesa durante todo el proceso, mejora la experiencia del usuario y permite decisiones instantáneas por parte de los organismos electorales.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/notebox",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Asistencia",
+       "value": "Guía paso a paso para autoridades de mesa durante todo el proceso electoral"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Monitoreo",
+       "value": "Acceso en tiempo real a información de todos los puntos de votación"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Identificación",
+       "value": "Identificación biométrica de electores"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Seguridad",
+       "value": "Validaciones automáticas, trazabilidad completa e información encriptada"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Integración",
+       "value": "Compatible con otros sistemas de gestión y escrutinio"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Adaptabilidad",
+       "value": "Configurable según normas y procedimientos de cada país o región"
+      }
+     ]
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/notebox#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es Notebox?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Notebox es un sistema de gestión integral para mesas electorales desarrollado por Comitia. Asiste a las autoridades de mesa paso a paso durante todo el proceso de votación, desde la apertura hasta el escrutinio, con una interfaz intuitiva que requiere mínima capacitación previa."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Notebox solo se usa para elecciones?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Si bien fue diseñado para procesos electorales, Notebox también puede utilizarse para registro de electores, eventos masivos, censos, procesos corporativos y logísticos, y cualquier operación que requiera identificación biométrica con un equipo móvil, tanto en el sector público como privado."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Notebox se puede adaptar a las normas electorales de mi país?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. El sistema se configura según las normas y procedimientos de cada país o región, y puede integrarse con otros sistemas de gestión y escrutinio ya existentes."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Cómo garantiza Notebox la seguridad de la información?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Notebox minimiza errores operativos con validaciones automáticas, mantiene trazabilidad completa de cada acción realizada, y centraliza y resguarda la información operativa de forma encriptada y segura."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "turing": {
+  "title": "Turing | Resultados electorales en tiempo real | COMITIA",
+  "desc": "Sistema de transmisión electoral que digitaliza actas y valida resultados en tiempo real con IA, reduciendo errores y garantizando transparencia y seguridad.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/turing#webpage",
+     "url": "https://comitiacorp.com/turing",
+     "name": "Turing | Sistema de transmisión y escrutinio electoral | Comitia",
+     "description": "Sistema de transmisión de resultados electorales que descentraliza la carga de datos con inteligencia artificial, garantizando resultados validados, sin errores y en tiempo real.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/turing#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/turing#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/turing#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Turing",
+       "item": "https://comitiacorp.com/turing"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/turing#product",
+     "name": "Turing | Sistema de transmisión y escrutinio electoral",
+     "description": "Turing moderniza el proceso de transmisión electoral descentralizando la carga de datos y asegurando que cada resultado llegue validado, sin errores y en tiempo real.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/turing",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Transmisión",
+       "value": "Transmisión digital de resultados y actas firmadas en tiempo real"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Inteligencia artificial",
+       "value": "Reducción de errores mediante IA en la interpretación y carga de datos"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Verificación",
+       "value": "Control de calidad y verificación doble por parte de la autoridad de mesa"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Integridad",
+       "value": "Sin manipulación intermedia de datos, digitalización en origen"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Compatibilidad",
+       "value": "Compatible con distintos formatos de actas de escrutinio y requisitos locales"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Integración",
+       "value": "Se integra con sistemas existentes sin reemplazarlos"
+      }
+     ]
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/turing#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es Turing de Comitia?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Turing es un sistema de transmisión de resultados electorales desarrollado por Comitia. Moderniza el proceso descentralizando la carga de datos directamente desde la mesa de votación, utilizando inteligencia artificial para reducir errores y garantizando que cada resultado llegue validado y en tiempo real."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Cómo usa Turing la inteligencia artificial?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Turing aplica IA en la interpretación y carga de los datos de las actas de escrutinio. Esto reduce significativamente los errores humanos en la transcripción y acelera el proceso de consolidación de resultados, manteniendo siempre la verificación directa por parte de la autoridad de mesa."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Turing reemplaza los sistemas de escrutinio existentes?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Turing está diseñado para integrarse con los sistemas y procedimientos ya existentes sin reemplazarlos. Es compatible con distintos formatos de actas de escrutinio y se adapta a los requisitos normativos locales de cada proceso electoral."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Cómo garantiza Turing que no se manipulen los resultados?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Turing digitaliza los datos directamente en su origen, eliminando la manipulación intermedia. La autoridad de mesa verifica y valida la carga en el momento, y todo el proceso permite el control partidario en las etapas de transmisión y consolidación de resultados."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "invote": {
+  "title": "Votación online segura y verificable | Invote COMITIA",
+  "desc": "Sistema de votación online que permite emitir votos remotos con seguridad, privacidad y verificación completa del proceso electoral.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/invote#webpage",
+     "url": "https://comitiacorp.com/invote",
+     "name": "Invote | Sistema de votación online segura y verificable | Comitia",
+     "description": "Sistema de votación online de punta a punta, verificable, que permite emitir el voto de forma remota garantizando accesibilidad, integridad y privacidad en todo el proceso.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/invote#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/invote#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/invote#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Invote",
+       "item": "https://comitiacorp.com/invote"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/invote#product",
+     "name": "Invote | Votación online segura y verificable",
+     "description": "Sistema de votación online de punta a punta, verificable, que permite a los ciudadanos emitir su voto de forma remota, garantizando accesibilidad, integridad y privacidad en todo el proceso.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/invote",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Acceso remoto",
+       "value": "Voto desde cualquier lugar con conexión a internet"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Integridad",
+       "value": "Voto según intención, registrado como emitido y contabilizado como registrado"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Transparencia",
+       "value": "Auditabilidad completa en todo el recorrido del voto"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Accesibilidad",
+       "value": "Accesible para personas con discapacidad visual o movilidad reducida"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Privacidad",
+       "value": "Preserva el secreto del voto y evita interferencias externas"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Seguridad",
+       "value": "Encriptación y verificación en cada paso del proceso con autenticación del votante sin comprometer su privacidad"
+      }
+     ],
+     "award": "Premiado en la Conferencia Zero Project en las Naciones Unidas en Viena por promover el voto accesible para personas con discapacidad"
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/invote#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es Invote de Comitia?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Invote es un sistema de votación online de punta a punta, verificable, desarrollado por Comitia. Permite a los ciudadanos emitir su voto de forma remota desde cualquier lugar con conexión a internet, garantizando accesibilidad, integridad y privacidad en todo el proceso."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Cómo garantiza Invote la seguridad del voto?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Invote utiliza encriptación y verificación en cada paso del proceso. Autentica al votante sin comprometer su privacidad, preserva el secreto del voto y permite que tanto el elector como las autoridades electorales puedan auditar el resultado."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Invote es accesible para personas con discapacidad?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Invote fue diseñado para ser accesible para personas con discapacidad visual, física y necesidades relacionadas con la alfabetización, permitiéndoles votar sin asistencia. Fue premiado en la Conferencia Zero Project en las Naciones Unidas en Viena por su contribución a la accesibilidad electoral."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿En qué regiones se ha utilizado Invote?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Invote ha sido utilizado en cinco continentes: América del Norte y del Sur, Europa, África, Oceanía y Asia, validando su implementación a nivel internacional."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "soe": {
+  "title": "Información y capacitación electoral online | SOE COMITIA",
+  "desc": "Soluciones de información y capacitación electoral con plataformas para educar votantes, entrenar autoridades y publicar resultados.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/soe#webpage",
+     "url": "https://comitiacorp.com/soe",
+     "name": "SOE | Soluciones de información y capacitación electoral | Comitia",
+     "description": "Soluciones para órganos electorales estatales y de condados en EEUU que ayudan a informar al electorado, capacitar a responsables de recintos y publicar resultados electorales.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/soe#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/soe#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/soe#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "SOE",
+       "item": "https://comitiacorp.com/soe"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/soe#product",
+     "name": "SOE | Soluciones de información y capacitación electoral",
+     "description": "A través de la empresa SOE en EEUU se provee a órganos electorales estatales y de condados soluciones que ayudan a informar al electorado, capacitar a los responsables de recintos y publicar los resultados.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/soe",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Online Voter Education",
+       "value": "Plataforma para diseñar la web de un organismo electoral maximizando la información del elector, permitiendo ver muestras de papeletas, encontrar distritos y lugares de votación"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Online Training",
+       "value": "Plataforma de capacitación para funcionarios electorales con videos, contenidos interactivos y evaluación de conocimientos"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Election Night Reporter",
+       "value": "Software para facilitar el diseño y publicación de resultados electorales"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Accesibilidad",
+       "value": "Premiado por su accesibilidad y facilidad de uso"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Alcance",
+       "value": "Dirigido a órganos electorales estatales y de condados en Estados Unidos"
+      }
+     ],
+     "award": [
+      "Online Voter Education premiado por su accesibilidad",
+      "Election Night Reporter galardonado por facilidad de uso, excelencia digital y accesibilidad"
+     ]
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/soe#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es SOE de Comitia?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SOE es una empresa en Estados Unidos a través de la cual Comitia provee a órganos electorales estatales y de condados soluciones que ayudan a informar al electorado, capacitar a los responsables de recintos de votación y publicar los resultados electorales."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Qué servicios ofrece SOE?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SOE ofrece tres servicios principales: Online Voter Education, una plataforma para diseñar la web de un organismo electoral y maximizar la información del elector; Online Training, una plataforma de capacitación para funcionarios electorales con videos y contenidos interactivos; y Election Night Reporter, un software para facilitar el diseño y publicación de resultados electorales."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿SOE ha recibido reconocimientos?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Online Voter Education ha sido premiado por su accesibilidad, y Election Night Reporter ha sido galardonado por su facilidad de uso, excelencia digital y accesibilidad."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿A quién está dirigido SOE?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SOE está dirigido a órganos electorales estatales y de condados en Estados Unidos, ofreciendo soluciones para informar al electorado, capacitar a funcionarios y publicar resultados."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "eos": {
+  "title": "Sistema de operaciones electorales | Gestión en tiempo real COMITIA",
+  "desc": "Plataforma para gestionar y monitorear procesos electorales en tiempo real con trazabilidad, control y centralización de datos.",
+  "ld": {
+   "@context": "https://schema.org",
+   "@graph": [
+    {
+     "@type": "WebPage",
+     "@id": "https://comitiacorp.com/sistema-operaciones-electorales#webpage",
+     "url": "https://comitiacorp.com/sistema-operaciones-electorales",
+     "name": "Sistema de Operaciones Electorales | Comitia",
+     "description": "Solución integral para planificar, gestionar y monitorear cada etapa de un proceso electoral. Centraliza toda la operación en un entorno digital seguro, eficiente y en tiempo real.",
+     "isPartOf": {
+      "@id": "https://comitiacorp.com/#website"
+     },
+     "about": {
+      "@id": "https://comitiacorp.com/sistema-operaciones-electorales#product"
+     },
+     "breadcrumb": {
+      "@id": "https://comitiacorp.com/sistema-operaciones-electorales#breadcrumb"
+     }
+    },
+    {
+     "@type": "BreadcrumbList",
+     "@id": "https://comitiacorp.com/sistema-operaciones-electorales#breadcrumb",
+     "itemListElement": [
+      {
+       "@type": "ListItem",
+       "position": 1,
+       "name": "Inicio",
+       "item": "https://comitiacorp.com"
+      },
+      {
+       "@type": "ListItem",
+       "position": 2,
+       "name": "Sistema de Operaciones Electorales",
+       "item": "https://comitiacorp.com/sistema-operaciones-electorales"
+      }
+     ]
+    },
+    {
+     "@type": "Product",
+     "@id": "https://comitiacorp.com/sistema-operaciones-electorales#product",
+     "name": "Sistema de Operaciones Electorales",
+     "description": "Solución integral para planificar, gestionar y monitorear cada etapa de un proceso electoral. Centraliza toda la operación en un entorno digital seguro, eficiente y en tiempo real.",
+     "brand": {
+      "@type": "Brand",
+      "name": "Comitia"
+     },
+     "manufacturer": {
+      "@id": "https://comitiacorp.com/#organization"
+     },
+     "url": "https://comitiacorp.com/sistema-operaciones-electorales",
+     "category": "Tecnología Electoral",
+     "additionalProperty": [
+      {
+       "@type": "PropertyValue",
+       "name": "Gestión centralizada",
+       "value": "Gestión centralizada de cronogramas, recursos y equipos"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Monitoreo",
+       "value": "Seguimiento en tiempo real de todas las fases del proceso"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Comunicación",
+       "value": "Comunicación directa con los recursos en campo a través de apps customizadas"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Métricas",
+       "value": "Visualización de métricas clave y alertas en tiempo real"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Integración",
+       "value": "Integración con otros sistemas como Notebox, Turing y BUE"
+      },
+      {
+       "@type": "PropertyValue",
+       "name": "Seguridad",
+       "value": "Accesos por rol con control de permisos, trazabilidad completa y almacenamiento seguro de datos críticos"
+      }
+     ]
+    },
+    {
+     "@type": "FAQPage",
+     "@id": "https://comitiacorp.com/sistema-operaciones-electorales#faq",
+     "mainEntity": [
+      {
+       "@type": "Question",
+       "name": "¿Qué es el Sistema de Operaciones Electorales de Comitia?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Es una solución integral para planificar, gestionar y monitorear cada etapa de un proceso electoral. Centraliza toda la operación en un entorno digital seguro, eficiente y en tiempo real, permitiendo el seguimiento de contingencias y la toma de decisiones informadas."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Con qué otros sistemas se integra?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El Sistema de Operaciones Electorales se integra con otros productos de Comitia como Notebox, Turing y BUE, permitiendo una gestión unificada de todo el proceso electoral."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Se puede adaptar a distintos tipos de elecciones?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Es personalizable según la estructura y reglamentación de cada país, y escalable para adaptarse tanto a elecciones pequeñas como masivas, incluyendo procesos nacionales, municipales o privados de alta complejidad."
+       }
+      },
+      {
+       "@type": "Question",
+       "name": "¿Cómo garantiza la seguridad de la información?",
+       "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El sistema cuenta con accesos por rol con control de permisos, trazabilidad completa de cada acción registrada, y almacenamiento seguro con respaldo constante de datos críticos."
+       }
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

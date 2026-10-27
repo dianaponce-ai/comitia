@@ -1,172 +1,248 @@
+// Genera el sitio estático de Comitia en dist/
+//   - Una página HTML por ruta e idioma (/es/... y /en/...), con su title,
+//     description, canonical, hreflang, Open Graph y datos estructurados.
+//   - Imágenes optimizadas a WebP (dos tamaños) desde los originales en src/assets.
+//   - CSS original (src/styles) minificado en un solo archivo.
+//   - JS mínimo (src/client) con carga diferida de 3D, carruseles y mapa.
+// Uso: node build.mjs            → para comitiacorp.com
+//      SITE_BASE=/comitia node build.mjs → para una subcarpeta (vista previa)
 import fs from 'fs';
 import path from 'path';
-import vm from 'vm';
-import { feature } from 'topojson-client';
-import { geoEqualEarth, geoPath } from 'd3-geo';
-import { GROUPS } from './src/locations.mjs';
+import crypto from 'crypto';
+import sharp from 'sharp';
+import * as esbuild from 'esbuild';
+import * as S from './src/site.mjs';
 
-const ORIGIN = process.env.SITE_ORIGIN || 'https://comitiacorp.com';
 const BASE = (process.env.SITE_BASE || '').replace(/\/$/, '');
-const W = 1000, H = 470;
-const topo = JSON.parse(fs.readFileSync('node_modules/world-atlas/land-110m.json'));
-const land = feature(topo, topo.objects.land);
-const proj = geoEqualEarth().rotate([-10, 0]).fitExtent([[0, 0], [W, H + 40]], { type: 'Sphere' });
-const LAND = geoPath(proj).digits(1)(land);
+const ORIGIN = S.SITE_URL;
+const OUT = 'dist';
+const CACHE = '.cache/img';
+const t0 = Date.now();
 
-const offices = { tampa:[-82.46,27.95], miami:[-80.19,25.76], colonia:[-57.84,-34.47], dubai:[55.27,25.20], barcelona:[2.17,41.39], bsas:[-58.38,-34.60], asuncion:[-57.58,-25.26], quito:[-78.47,-0.18], tegucigalpa:[-87.19,14.07], johannesburg:[28.05,-26.20], sanjose:[-84.08,9.93], ontario:[-79.38,43.65] };
-const LAND_PTS = {};
-for (const k in offices) { const [x, y] = proj(offices[k]); LAND_PTS[k] = [+(x / W * 100).toFixed(2), +(y / H * 100).toFixed(2)]; }
+fs.rmSync(OUT, { recursive: true, force: true });
+fs.mkdirSync(OUT + '/assets', { recursive: true });
 
-const LOC = GROUPS.map(([r, id, name, lon, lat, items]) => { const [x, y] = proj([lon, lat]); return { r, id, name, x: +x.toFixed(1), y: +y.toFixed(1), items }; });
-const VB = { world: [0, 0, W, H] };
-for (const r of ['ar', 'latam', 'na', 'eu', 'mea', 'apac']) {
-  const pts = LOC.filter(g => g.r === r);
-  let x0 = Math.min(...pts.map(p => p.x)), x1 = Math.max(...pts.map(p => p.x));
-  let y0 = Math.min(...pts.map(p => p.y)), y1 = Math.max(...pts.map(p => p.y));
-  const pad = 40; x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
-  let w = Math.max(x1 - x0, 200), h = Math.max(y1 - y0, 200 * H / W);
-  if (w / h > W / H) h = w * H / W; else w = h * W / H;
-  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-  VB[r] = [cx - w / 2, cy - h / 2, w, h].map(v => +v.toFixed(1));
-}
-
-// News articles: src/news/{slug}.{lang}.md
-const escH = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const slugify = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
-const NB = {};
-for (const f of fs.readdirSync('src/news').filter(f => f.endsWith('.md')).sort()) {
-  const [slug, lg] = f.replace(/\.md$/, '').split('.');
-  const raw = fs.readFileSync('src/news/' + f, 'utf8');
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  const title = m[1].match(/title:\s*(.*)/)[1].trim();
-  const blocks = m[2].trim().split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
-  const used = {}; const toc = []; let html = ''; let words = 0; let first = '';
-  for (const b of blocks) {
-    words += b.split(/\s+/).length;
-    const h = b.match(/^(#{2,3})\s+(.*)$/);
-    if (h) {
-      let id = slugify(h[2]); while (used[id]) id += '-2'; used[id] = 1;
-      if (h[1] === '##') toc.push([id, escH(h[2])]);
-      html += `<h${h[1].length} id="${id}">${escH(h[2])}</h${h[1].length}>`;
-    } else { if (!first) first = b; html += `<p>${escH(b)}</p>`; }
+/* ---------- 1. Imágenes ---------- */
+// Clave → { src, sm?, w } (rutas públicas). Las claves son las rutas originales:
+//   src/assets/img/<x>          → "<x>"                 → /img/<x>.webp
+//   src/assets/casos/<x>.jpg    → "casos/images/<x>.jpg" (como en casos.json) → /casos/images/<x>.webp
+//   src/assets/blog/<x>.jpg     → "blog/images/<x>.jpg"  (como en blog.json)  → /blog/images/<x>.webp
+const assets = {};
+const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+const sources = [
+  ...walk('src/assets/img').map((f) => [f, path.relative('src/assets/img', f), 'img/' + path.relative('src/assets/img', f)]),
+  ...walk('src/assets/casos').map((f) => [f, 'casos/images/' + path.basename(f), 'casos/images/' + path.basename(f)]),
+  ...walk('src/assets/blog').map((f) => [f, 'blog/images/' + path.basename(f), 'blog/images/' + path.basename(f)]),
+];
+let made = 0;
+await Promise.all(sources.map(async ([file, key, out]) => {
+  const ext = path.extname(file).toLowerCase();
+  const dest = path.join(OUT, out);
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  if (ext === '.svg') { fs.copyFileSync(file, dest); assets[key] = { src: '/' + out }; return; }
+  if (!['.jpg', '.jpeg', '.png'].includes(ext)) return;
+  const isQR = /qr-/.test(file);
+  const stat = fs.statSync(file);
+  const stem = out.slice(0, -ext.length);
+  const meta = await sharp(file).metadata();
+  const w = Math.min(meta.width, 1920);
+  const variants = [[stem + (isQR ? '.png' : '.webp'), w]];
+  if (!isQR && meta.width > 900) variants.push([stem + '-sm.webp', 800]);
+  for (const [o, width] of variants) {
+    const cached = path.join(CACHE, o + '.' + stat.mtimeMs.toFixed(0) + '.' + stat.size);
+    if (!fs.existsSync(cached)) {
+      fs.mkdirSync(path.dirname(cached), { recursive: true });
+      let p = sharp(file).rotate().resize({ width, withoutEnlargement: true });
+      p = isQR ? p.png({ compressionLevel: 9, palette: true }) : p.webp({ quality: /ISO_|TUV|logo/i.test(file) ? 88 : 78, effort: 5 });
+      await p.toFile(cached); made++;
+    }
+    fs.copyFileSync(cached, path.join(OUT, o));
   }
-  const sents = first.match(/[^.!?]+[.!?]+/g) || [first];
-  let ex = sents[0].trim(); if (ex.length < 110 && sents[1]) ex += ' ' + sents[1].trim();
-  (NB[slug] = NB[slug] || {})[lg] = { t: title, html, toc, ex, min: Math.max(1, Math.round(words / 220)) };
+  assets[key] = { src: '/' + variants[0][0], w, nw: meta.width, nh: meta.height, ...(variants[1] ? { sm: '/' + variants[1][0] } : {}) };
+}));
+
+/* ---------- 2. CSS (mismo orden que el bundle del sitio anterior) ---------- */
+let css = ['src/styles/index.css', 'src/styles/app.css', 'src/styles/modal.css', 'node_modules/@splidejs/splide/dist/css/splide.min.css', 'src/styles/overrides.css']
+  .map((f) => fs.readFileSync(f, 'utf8')).join('\n');
+css = css.replace(/url\((['"]?)assets\/img\/([^'")]+)\1\)/g, (m, q, p) => {
+  const a = assets[p]; if (!a) throw new Error('CSS: falta ' + p);
+  return `url(${BASE}${a.src})`;
+});
+css = (await esbuild.transform(css, { loader: 'css', minify: true, target: ['chrome100', 'safari15', 'firefox100'] })).code;
+const hash = (s) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 10);
+const cssFile = `/assets/site.${hash(css)}.css`;
+fs.writeFileSync(OUT + cssFile, css);
+
+/* ---------- 3. JS ---------- */
+const js = await esbuild.build({
+  entryPoints: ['src/client/main.js'], bundle: true, splitting: true, format: 'esm', minify: true,
+  outdir: OUT + '/assets', entryNames: 'main.[hash]', chunkNames: 'chunks/[name].[hash]',
+  target: ['chrome100', 'safari15', 'firefox100'], metafile: true, legalComments: 'none',
+});
+const mainJs = '/' + path.relative(OUT, Object.keys(js.metafile.outputs).find((o) => /main\.[A-Z0-9]+\.js$/i.test(o)));
+const chunk = (name) => { const o = Object.keys(js.metafile.outputs).find((x) => new RegExp('chunks/' + name + '\\.').test(x) && x.endsWith('.js')); return o ? '/' + path.relative(OUT, o) : null; };
+
+/* ---------- 4. Archivos públicos, brochures y videos ---------- */
+fs.cpSync('public', OUT, { recursive: true });
+const brochures = { es: 'src/brochures/es.pdf', en: 'src/brochures/en.pdf' };
+fs.mkdirSync(OUT + '/brochures', { recursive: true });
+for (const l of S.LANGS) for (const k of Object.keys(S.LOCALES[l]).filter((k) => k.endsWith('-brochure-url'))) {
+  fs.copyFileSync(brochures[l], OUT + '/brochures/' + S.LOCALES[l][k]);
 }
-for (const k in NB) for (const l of ['es', 'en', 'pt']) if (!NB[k][l]) throw new Error('missing ' + k + ' ' + l);
-const css = fs.readFileSync('src/style.css', 'utf8');
-const FAVSVG = fs.readFileSync('src/icons/favicon.svg', 'utf8');
-const ICONS = (b) => `<link rel="icon" href="${b}/favicon.svg" type="image/svg+xml"><link rel="icon" href="${b}/favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="${b}/apple-touch-icon.png"><link rel="manifest" href="${b}/site.webmanifest"><meta name="theme-color" content="#1E2740">`;
-const code = [
-  fs.readFileSync('src/prelude.js', 'utf8'),
-  fs.readFileSync('src/data-core.js', 'utf8'),
-  'var NB=' + JSON.stringify(NB) + ';',
-  'var LOGOS=' + JSON.stringify(Object.fromEntries(fs.readdirSync('src/logos').filter(f => f.endsWith('.svg')).map(f => [f.slice(0, -4), fs.readFileSync('src/logos/' + f, 'utf8').replace(/\s*\n\s*/g, ' ')]))) + ';',
-  'var LOC=' + JSON.stringify(LOC) + ';var VB=' + JSON.stringify(VB) + ';var LAND_PTS=' + JSON.stringify(LAND_PTS) + ';var LAND=' + JSON.stringify(LAND) + ';',
-  fs.readFileSync('src/app.js', 'utf8')
-].join('\n');
+// Nombres históricos de brochures que no están en las traducciones
+for (const [n, l] of [['Comitia_Brochure_ENG_GENERAL_Digital_v2.pdf', 'en'], ['Comitia_Brochure_ESP_GENERAL_Digital_v2.pdf', 'es']]) {
+  if (!fs.existsSync(OUT + '/brochures/' + n)) fs.copyFileSync(brochures[l], OUT + '/brochures/' + n);
+}
 
-const FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">';
-const SPRITE = `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-<symbol id="iso" viewBox="0 0 100 100"><g fill="none" stroke-width="8.4" stroke-linecap="round" stroke-linejoin="round"><path d="M89.53 55.5L59.53 55.5L74.53 81.48 M65 86.98L50 61L35 86.98 M25.47 81.48L40.47 55.5L10.47 55.5 M10.47 44.5L40.47 44.5L25.47 18.52 M74.53 18.52L59.53 44.5L89.53 44.5" stroke="currentColor"/><path d="M43 26.88L50 39L65.5 12.15" stroke="#5AC4B2"/></g></symbol>
-<symbol id="arrow" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></symbol>
-<symbol id="back" viewBox="0 0 16 16"><path d="M14 8H3M7 4L3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></symbol>
-<symbol id="ext" viewBox="0 0 16 16"><path d="M6 3H3v10h10v-3M9 3h4v4M13 3L7 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></symbol>
-<symbol id="dl" viewBox="0 0 16 16"><path d="M8 2v8M4.5 6.5L8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></symbol>
-</svg>`;
+/* ---------- 5. Páginas ---------- */
+const routes = S.routes();
+const urlOf = (r, l = r.lang) => r.unprefixed ? r.rest : '/' + l + (r.rest === '/' ? '' : r.rest);
+const has = new Set(routes.map((r) => r.lang + ':' + r.rest));
+const GTM = 'GTM-5QNJCVZL';
+const OG_LOCALE = { es: 'es_AR', en: 'en_US' };
 
-/* 1) Artifact (single file, hash routes per language) */
-const artifact = `<title>Comitia</title>
-<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(FAVSVG.replace(/\s+/g, ' '))}">
-<meta name="claude:viewport-fit-sides" content="cover">
-${FONTS}
-<style>${css}</style>
-${SPRITE}
-<div id="app"></div>
-<script>var __SITE__={mode:'spa',base:'',img:${JSON.stringify(process.env.ARTIFACT_IMG_ORIGIN || ORIGIN + BASE)}};</script>
-<script>${code.replace(/<\/script/gi, '<\\/script')}</script>
-`;
-fs.mkdirSync('artifact', { recursive: true });
-fs.writeFileSync('artifact/comitia.html', artifact);
-
-/* 2) Static site: one URL per language and page */
-const ctx = { __SITE__: { mode: 'static', base: BASE, build: true }, console };
-vm.createContext(ctx);
-vm.runInContext(code, ctx);
-const { PAGES, LANGS } = ctx;
-const out = 'dist';
-fs.rmSync(out, { recursive: true, force: true });
-fs.mkdirSync(out + '/assets', { recursive: true });
-fs.writeFileSync(out + '/assets/site.css', css);
-for (const f of fs.readdirSync('src/icons')) fs.copyFileSync('src/icons/' + f, out + '/' + f);
-fs.cpSync('src/img', out + '/img', { recursive: true });
-fs.cpSync('src/video', out + '/video', { recursive: true });
-fs.writeFileSync(out + '/site.webmanifest', JSON.stringify({ name: 'Comitia', short_name: 'Comitia', start_url: BASE + '/', display: 'browser', background_color: '#1E2740', theme_color: '#1E2740', icons: [{ src: BASE + '/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: BASE + '/icon-512.png', sizes: '512x512', type: 'image/png' }] }, null, 2));
-fs.writeFileSync(out + '/assets/app.js', code);
-const LOCALE = { es: 'es_AR', en: 'en_US', pt: 'pt_BR' };
-const HTMLLANG = { es: 'es', en: 'en', pt: 'pt-BR' };
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const urls = [];
-let problems = 0;
-for (const page of PAGES) {
-  const alts = {};
-  for (const l of LANGS) { ctx.lang = l; alts[l] = ORIGIN + ctx.path(page, l); }
-  urls.push(alts);
-  for (const l of LANGS) {
-    ctx.lang = l;
-    const body = ctx.chrome(page, ctx.viewHTML(page));
-    if (/undefined|NaN/.test(body.replace(/typeof [a-zA-Z_]+!=='undefined'/g, ''))) { problems++; console.log('check', l, page); }
-    const m = ctx.meta(page);
-    const ld = page === 'inicio' ? `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'Comitia', alternateName: 'Comitia | Grupo MSA', url: ORIGIN, logo: ORIGIN + BASE + '/icon-512.png', description: m.desc, parentOrganization: { '@type': 'Organization', name: 'Grupo MSA', url: 'https://www.msa.com.ar/' }, contactPoint: { '@type': 'ContactPoint', contactType: 'sales', email: 'contactus@comitiacorp.com', telephone: '+541160911540' } })}</script>` : '';
-    const head = `<!doctype html>
-<html lang="${HTMLLANG[l]}">
+function head(r, c, m) {
+  const self = ORIGIN + urlOf(r);
+  const alts = r.unprefixed ? '' : S.LANGS.filter((l) => has.has(l + ':' + r.rest)).map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN + urlOf(r, l)}">`).join('')
+    + `<link rel="alternate" hreflang="x-default" href="${ORIGIN + urlOf(r, 'es')}">`;
+  const ogImg = m.image && c.assets[m.image] ? ORIGIN + c.assets[m.image].src : ORIGIN + '/comitia-og.jpg';
+  const ogDims = m.image ? '' : '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">';
+  const preload = r.kind === 'home' ? `<link rel="preload" as="image" href="${BASE}/video/comitia-video-home.jpg" media="(min-width: 746px)">` : '';
+  return `<!doctype html>
+<html lang="${r.lang}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>${esc(m.title)}</title>
-<meta name="description" content="${esc(m.desc)}">
-<link rel="canonical" href="${alts[l]}">
-${LANGS.map(x => `<link rel="alternate" hreflang="${HTMLLANG[x]}" href="${alts[x]}">`).join('\n')}
-<link rel="alternate" hreflang="x-default" href="${alts.es}">
-<meta property="og:type" content="website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${S.esc(m.title)}</title>
+<meta name="description" content="${S.esc(m.desc)}">
+${m.noindex ? '<meta name="robots" content="noindex">' : ''}
+<link rel="canonical" href="${self}">
+${alts}
 <meta property="og:site_name" content="Comitia">
-<meta property="og:title" content="${esc(m.title)}">
-<meta property="og:description" content="${esc(m.desc)}">
-<meta property="og:url" content="${alts[l]}">
-<meta property="og:locale" content="${LOCALE[l]}">
-${LANGS.filter(x => x !== l).map(x => `<meta property="og:locale:alternate" content="${LOCALE[x]}">`).join('\n')}
-<meta property="og:image" content="${m.img ? ORIGIN + BASE + '/img/' + m.img + '.webp' : ORIGIN + BASE + '/comitia-og.jpg'}">
+<meta property="og:type" content="${m.article ? 'article' : 'website'}">
+<meta property="og:title" content="${S.esc(m.title)}">
+<meta property="og:description" content="${S.esc(m.desc)}">
+<meta property="og:url" content="${self}">
+<meta property="og:locale" content="${OG_LOCALE[r.lang]}">
+<meta property="og:image" content="${ogImg}">${ogDims}
 <meta name="twitter:card" content="summary_large_image">
-${ICONS(BASE)}
-${FONTS}
-<link rel="stylesheet" href="${BASE}/assets/site.css">
-${ld}
-</head>
+<meta name="twitter:title" content="${S.esc(m.title)}">
+<meta name="twitter:description" content="${S.esc(m.desc)}">
+<meta name="theme-color" content="#182230">
+<link rel="icon" href="${BASE}/comitia-icon.svg">
+<link rel="icon" href="${BASE}/comitia-icon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="${BASE}/apple-touch-icon.png">
+<link rel="manifest" href="${BASE}/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${BASE}${cssFile}">
+<link rel="modulepreload" href="${BASE}${mainJs}">
+${preload}
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM}');</script>
+${jsonLd(r, c, m, self)}
+</head>`;
+}
+
+// Datos estructurados: los mismos del sitio anterior (en español), con las URLs
+// corregidas a las de cada idioma; en inglés, una versión equivalente traducida.
+function jsonLd(r, c, m, self) {
+  const org = { '@id': ORIGIN + '/#organization' };
+  let graph = [];
+  if (m.ld) {
+    const es = S.SEO.es[m.ld].ld;
+    const fixUrl = (u) => typeof u === 'string' && u.startsWith(ORIGIN) ? u.replace(ORIGIN + '/', ORIGIN + '/' + r.lang + '/').replace(new RegExp(ORIGIN + '/' + r.lang + '/$'), ORIGIN + '/' + r.lang).replace(/\/(es|en)\/#/, '/#') : u;
+    const fix = (o) => Array.isArray(o) ? o.map(fix) : o && typeof o === 'object' ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, (k === 'url' || k === 'item' || k === '@id') ? fixUrl(v) : fix(v)])) : o;
+    if (r.lang === 'es') graph = fix(es['@graph']);
+    else {
+      // Inglés: organización/sitio + página y producto con los textos traducidos
+      graph = fix(es['@graph']).filter((n) => ['Organization', 'WebSite', 'WebPage', 'BreadcrumbList', 'Product', 'Service'].includes(n['@type'])).map((n) => {
+        const L = S.LOCALES.en;
+        if (n['@type'] === 'WebPage') return { ...n, name: m.title, description: m.desc };
+        if (n['@type'] === 'Product') { const { additionalProperty, ...rest } = n; return { ...rest, description: m.desc, category: 'Electoral Technology' }; }
+        if (n['@type'] === 'BreadcrumbList') return { ...n, itemListElement: n.itemListElement.map((i, k) => ({ ...i, name: k === 0 ? 'Home' : (r.solution ? L[S.SOLUTIONS[r.solution].k + '-link'] || i.name : i.name) })) };
+        if (n['@type'] === 'Organization') return { ...n, description: 'Secure, scalable and auditable digital platforms for elections worldwide.' };
+        if (n['@type'] === 'Service') return { ...n, serviceType: 'Electoral Technology' };
+        return n;
+      });
+    }
+    graph = graph.map((n) => n['@type'] === 'Organization' ? { ...n, logo: ORIGIN + '/comitia-icon-512x512.png' } : n);
+  } else if (m.article) {
+    const x = m.article, l = r.lang;
+    graph = [{ '@type': r.kind === 'nota' ? 'BlogPosting' : 'Article', headline: x.title[l] || x.title.es, description: m.desc, image: c.assets[x.image] ? ORIGIN + c.assets[x.image].src : undefined, inLanguage: l, mainEntityOfPage: self, publisher: { '@type': 'Organization', name: 'Comitia', logo: { '@type': 'ImageObject', url: ORIGIN + '/comitia-icon-512x512.png' } } },
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: l === 'es' ? 'Inicio' : 'Home', item: ORIGIN + '/' + l }, { '@type': 'ListItem', position: 2, name: S.LOCALES[l][r.kind === 'nota' ? 'blog-title' : 'casos-title'], item: ORIGIN + '/' + l + (r.kind === 'nota' ? '/blog' : '/casos') }, { '@type': 'ListItem', position: 3, name: x.title[l] || x.title.es, item: self }] }];
+  } else if (r.kind !== 'card') {
+    graph = [{ '@type': 'WebPage', url: self, name: m.title, description: m.desc, inLanguage: r.lang, isPartOf: { '@id': ORIGIN + '/#website' }, publisher: org }];
+  }
+  if (!graph.length) return '';
+  return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c')}</script>`;
+}
+
+function page(r) {
+  const c = S.ctx({ lang: r.lang, base: BASE, assets });
+  r.alts = Object.fromEntries(S.LANGS.map((l) => [l, BASE + (has.has(l + ':' + r.rest) && !r.unprefixed ? urlOf(r, l) : (r.unprefixed ? r.rest : '/' + l))]));
+  const m = r.meta(c);
+  const body = S.header(c, r) + r.render(c) + S.footer(c);
+  const site = { lang: r.lang, base: BASE, page: r.kind };
+  // Tarjetas personales (sin idioma en la URL): como antes, se muestran en el
+  // idioma del navegador; la versión en inglés viaja en un <template>.
+  let alt = '';
+  if (r.kind === 'card') {
+    const ce = S.ctx({ lang: 'en', base: BASE, assets });
+    const re = { ...r, lang: 'en' };
+    alt = `<template id="alt-en">${S.header(ce, re) + r.render(ce) + S.footer(ce)}</template><script>(function(){var l;try{l=localStorage.getItem('i18nextLng')}catch(e){}if(!l)l=(navigator.language||'es').slice(0,2);if(l==='en'){var t=document.getElementById('alt-en');var a=document.querySelector('#root .App');a.innerHTML=t.innerHTML;document.documentElement.lang='en';window.__SITE__={lang:'en',base:'${BASE}',page:'card'}}})()</script>`;
+  }
+  return `${head(r, c, m)}
 <body>
-${SPRITE}
-<div id="app">${body}</div>
-<script>window.__SITE__=${JSON.stringify({ mode: 'static', base: BASE, page, lang: l })};</script>
-<script src="${BASE}/assets/app.js" defer></script>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<div id="root"><div class="App">${body}</div></div>
+<script>window.__SITE__=${JSON.stringify(site)}</script>${alt}
+<script type="module" src="${BASE}${mainJs}"></script>
 </body>
 </html>
 `;
-    const dir = path.join(out, ctx.path(page, l).slice(BASE.length));
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'index.html'), head);
-  }
 }
-// Root: send visitors to their language, crawlers see x-default links
-fs.writeFileSync(out + '/index.html', `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title>${ICONS(BASE)}
-<link rel="canonical" href="${ORIGIN}${BASE}/es/">
-<link rel="alternate" hreflang="es" href="${ORIGIN}${BASE}/es/"><link rel="alternate" hreflang="en" href="${ORIGIN}${BASE}/en/"><link rel="alternate" hreflang="pt-BR" href="${ORIGIN}${BASE}/pt/"><link rel="alternate" hreflang="x-default" href="${ORIGIN}${BASE}/es/">
-<script>var n=(navigator.language||'es').slice(0,2);location.replace('${BASE}/'+(n==='en'||n==='pt'?n:'es')+'/');</script>
-<meta http-equiv="refresh" content="0; url=${BASE}/es/"></head><body><a href="${BASE}/es/">Español</a> · <a href="${BASE}/en/">English</a> · <a href="${BASE}/pt/">Português</a></body></html>`);
-fs.writeFileSync(out + '/.nojekyll', '');
-fs.writeFileSync(out + '/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
+
+const write = (rel, html) => { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); };
+for (const r of routes) {
+  const html = page(r);
+  const u = urlOf(r);
+  write(u + '.html', html);                       // /es/bue → es/bue.html
+  if (r.rest === '/') write(u + '/index.html', html); // /es/ también
+}
+
+// 404 (en español, con el header y footer del sitio)
+{
+  const c = S.ctx({ lang: 'es', base: BASE, assets });
+  const r = { lang: 'es', rest: '/404', kind: 'page', unprefixed: true, alts: { es: BASE + '/es', en: BASE + '/en' } };
+  const body = S.header(c, r) + S.notFound(c) + S.footer(c);
+  const m = { title: `${S.LOCALES.es['404-title']} | COMITIA`, desc: S.stripHtml(S.LOCALES.es['404-description']), noindex: true };
+  write('404.html', head(r, c, m).replace(/<link rel="canonical"[^>]*>\n/, '') + `\n<body><div id="root"><div class="App">${body}</div></div><script>window.__SITE__=${JSON.stringify({ lang: 'es', base: BASE, page: '404' })}</script><script type="module" src="${BASE}${mainJs}"></script></body></html>\n`);
+}
+
+// "/" → idioma preferido (como el sitio anterior). Los buscadores ven x-default.
+const redirectPage = (target, js) => `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title><meta name="robots" content="noindex"><link rel="canonical" href="${ORIGIN}${target}"><link rel="alternate" hreflang="es" href="${ORIGIN}/es"><link rel="alternate" hreflang="en" href="${ORIGIN}/en"><link rel="alternate" hreflang="x-default" href="${ORIGIN}/es"><script>${js}</script><meta http-equiv="refresh" content="0; url=${BASE}${target}"></head><body><a href="${BASE}/es">Español</a> · <a href="${BASE}/en">English</a></body></html>\n`;
+const prefLang = `var l='es';try{var s=localStorage.getItem('i18nextLng');if(s==='en'||s==='es')l=s;else if((navigator.language||'').slice(0,2)==='en')l='en'}catch(e){}`;
+write('index.html', redirectPage('/es', `${prefLang}location.replace('${BASE}/'+l+location.search+location.hash);`));
+// Rutas viejas sin idioma (/casos, /bue, ...) → misma página con idioma
+const legacy = [...new Set(routes.filter((r) => !r.unprefixed && r.rest !== '/').map((r) => r.rest))];
+for (const rest of legacy) write(rest + '.html', redirectPage('/es' + rest, `${prefLang}location.replace('${BASE}/'+l+'${rest}'+location.search+location.hash);`));
+
+/* ---------- 6. sitemap, robots, vercel ---------- */
+const today = new Date().toISOString().slice(0, 10);
+const indexable = routes.filter((r) => !r.unprefixed);
+const groups = [...new Set(indexable.map((r) => r.rest))];
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${urls.flatMap(a => LANGS.map(l => `  <url><loc>${a[l]}</loc>${LANGS.map(x => `<xhtml:link rel="alternate" hreflang="${HTMLLANG[x]}" href="${a[x]}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${a.es}"/></url>`)).join('\n')}
+${groups.flatMap((rest) => S.LANGS.filter((l) => has.has(l + ':' + rest)).map((l) => {
+  const r = indexable.find((x) => x.rest === rest && x.lang === l);
+  const prio = rest === '/' ? '1.0' : r.kind === 'solution' ? '0.9' : ['caso', 'nota', 'legal'].includes(r.kind) ? (r.kind === 'legal' ? '0.3' : '0.7') : '0.8';
+  return `  <url><loc>${ORIGIN + urlOf(r)}</loc><lastmod>${today}</lastmod><priority>${prio}</priority>${S.LANGS.filter((x) => has.has(x + ':' + rest)).map((x) => `<xhtml:link rel="alternate" hreflang="${x}" href="${ORIGIN + urlOf(r, x)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${ORIGIN + urlOf(r, 'es')}"/></url>`;
+})).join('\n')}
 </urlset>
-`);
-fs.writeFileSync(out + '/robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}${BASE}/sitemap.xml\n`);
-console.log('pages', PAGES.length * LANGS.length, 'problems', problems, 'artifact KB', Math.round(artifact.length / 1024));
+`;
+fs.writeFileSync(OUT + '/sitemap.xml', sitemap);
+fs.writeFileSync(OUT + '/robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}/sitemap.xml\n`);
+
+const pages = routes.length;
+console.log(`OK · ${pages} páginas · ${Object.keys(assets).length} imágenes (${made} nuevas) · css ${(css.length / 1024).toFixed(0)} KB · ${((Date.now() - t0) / 1000).toFixed(1)} s`);
