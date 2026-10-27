@@ -3,14 +3,16 @@
 // del sitio anterior, para que el CSS original (src/styles/app.css) se vea igual.
 // Cada página se genera como HTML estático en build.mjs.
 import fs from 'fs';
+import * as BETA from './beta.mjs';
 
 const read = (p) => JSON.parse(fs.readFileSync(new URL(p, import.meta.url)));
-export const LOCALES = { es: read('./locales/es.json'), en: read('./locales/en.json') };
+export const LOCALES = { es: read('./locales/es.json'), en: read('./locales/en.json'), pt: read('./locales/pt.json') };
 export const CASOS = read('./content/casos.json');
 export const BLOG = read('./content/blog.json');
 export const LEGAL = read('./content/legal.json');
-export const SEO = { es: read('./content/seo-es.json'), en: read('./content/seo-en.json') };
-export const LANGS = ['es', 'en'];
+export const SEO = { es: read('./content/seo-es.json'), en: read('./content/seo-en.json'), pt: read('./content/seo-pt.json') };
+export const LANGS = ['es', 'en', 'pt'];
+export const HTML_LANG = { es: 'es', en: 'en', pt: 'pt-BR' };
 export const SITE_URL = 'https://comitiacorp.com';
 
 export const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -67,6 +69,7 @@ export function header(c, page) {
     + `<li class="${active('/como-trabajamos')}"><a href="${c.to('/como-trabajamos')}">${t('como-link')}</a></li>`
     + `<li class="${active('/casos')}"><a href="${c.to('/casos')}">${t('casos-link')}</a></li>`
     + `<li class="${path === '/blog' || path.startsWith('/blog/') ? 'active' : ''}"><a href="${c.to('/blog')}">${t('blog-link')}</a></li>`
+    + [['/mapa-de-casos', 'nav_mapa'], ['/nosotros', 'nav_nosotros']].map(([p, k]) => { const bs = BETA.strings(c.lang); return `<li class="bx-nav ${active(p)}"><a href="${c.to(p)}">${bs[k]}<sup class="bx-star" title="${esc(bs.beta_note)}"><span aria-hidden="true">★</span> ${bs.beta}</sup></a></li>`; }).join('')
     + `<li><button class="" type="button" data-goto="contacto">${t('contacto-link')}</button></li>`
     + `</ul></div>`;
   return `<header id="site-header" class="siteHeader ${f.isHome ? 'home' : ''}">`
@@ -323,6 +326,8 @@ export function routes() {
     for (const x of CASOS) add('/casos/' + x.slug, 'caso', (c) => caso(c, x), () => ({ title: `${byLang(x.title, lang)} | COMITIA`, desc: stripHtml(byLang(x.description_short, lang)), image: x.image, article: x }));
     add('/blog', 'page', blog, () => ({ title: L['blog-title'], desc: L['blog-description'] }));
     for (const x of BLOG) add('/blog/' + x.slug, 'nota', (c) => nota(c, x), () => ({ title: byLang(x.meta_title, lang) || `${byLang(x.title, lang)} | COMITIA`, desc: stripHtml(byLang(x.meta_description, lang) || byLang(x.description_short, lang)), image: x.image, article: x }));
+    add('/mapa-de-casos', 'beta', (c) => BETA.mapaCasos(c, { prefooter, banner, caseCard }), () => BETA.META.mapa(lang), { beta: 'mapa' });
+    add('/nosotros', 'beta', (c) => BETA.nosotros(c, { prefooter, banner }), () => BETA.META.nosotros(lang), { beta: 'nosotros' });
     for (const doc of Object.keys(LEGAL[lang])) add('/' + doc, 'legal', (c) => legal(c, doc), () => ({ title: `${LEGAL[lang][doc].title} | COMITIA`, desc: LEGAL[lang][doc].description }));
   }
   for (const slug of Object.keys(CARDS)) out.push({ lang: 'es', rest: '/' + slug, kind: 'card', unprefixed: true, vcf: CARDS[slug].vcf, render: (c) => card(c, slug), meta: () => ({ title: `${CARDS[slug].name} | COMITIA`, desc: `${CARDS[slug].name} · ${LOCALES.es[CARDS[slug].job]} · COMITIA`, noindex: true }) });

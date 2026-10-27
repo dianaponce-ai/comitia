@@ -1,0 +1,30 @@
+{
+ "inicio": {
+  "title": "COMITIA | Tecnologia eleitoral segura e escalável",
+  "desc": "A COMITIA oferece plataformas de voto eletrônico seguras, auditáveis e adaptadas a eleições em todo o mundo."
+ },
+ "bue": {
+  "title": "BUE | Cédula eletrônica segura e auditável | COMITIA",
+  "desc": "Sistema de cédula eletrônica com impressão e chip RFID que garante transparência, precisão e controle nos processos eleitorais."
+ },
+ "notebox": {
+  "title": "Notebox | Gestão de seções eleitorais em tempo real | COMITIA",
+  "desc": "Sistema de gestão eleitoral que auxilia os mesários com informações em tempo real, biometria e processos mais ágeis, seguros e eficientes."
+ },
+ "turing": {
+  "title": "Turing | Resultados eleitorais em tempo real | COMITIA",
+  "desc": "Sistema de transmissão eleitoral que digitaliza atas e valida resultados em tempo real com IA, reduzindo erros e garantindo transparência e segurança."
+ },
+ "invote": {
+  "title": "Votação online segura e verificável | Invote COMITIA",
+  "desc": "Sistema de votação online que permite votar à distância com segurança, privacidade e verificação completa do processo eleitoral."
+ },
+ "soe": {
+  "title": "Informação e capacitação eleitoral online | SOE COMITIA",
+  "desc": "Soluções de informação e capacitação eleitoral com plataformas para educar eleitores, capacitar autoridades e publicar resultados."
+ },
+ "eos": {
+  "title": "Sistema de Operações Eleitorais | Gestão em tempo real COMITIA",
+  "desc": "Plataforma para gerenciar e monitorar processos eleitorais em tempo real, com rastreabilidade, controle e dados centralizados."
+ }
+}

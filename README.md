@@ -66,3 +66,8 @@ Después de publicar, dar de alta `https://comitiacorp.com/sitemap.xml` en Googl
 - **Un texto**: cambiarlo en `src/locales/es.json` y `en.json` (misma clave).
 - **Un caso o una nota**: agregar el objeto en `src/content/casos.json` o `blog.json` (mismo formato que los existentes) y poner las imágenes en `src/assets/casos/` o `src/assets/blog/`. La página, el listado y el sitemap se generan solos.
 - **Una imagen**: reemplazar el JPG/PNG original en `src/assets/`; el build genera las versiones WebP.
+
+## Portugués y secciones beta
+
+- El sitio completo está también en portugués (`/pt/...`, textos en `src/locales/pt.json` y en los `pt` de `src/content/*.json`). Los textos legales en portugués son traducciones de trabajo: conviene que Legales los revise. Los brochures en portugués enlazan los PDF en español.
+- **Mapa de casos** (`/{es|en|pt}/mapa-de-casos`) y **Nosotros** (`/{es|en|pt}/nosotros`) están marcadas como beta (★ Beta en el menú), con `noindex` y fuera del sitemap. Su contenido vive en `src/beta.mjs`, las ubicaciones en `src/content/locations.mjs`, los estilos en `src/styles/beta.css` y la interacción en `src/client/beta.js`. Para publicarlas como definitivas: quitar `noindex` en `META` de `src/beta.mjs` y el filtro `!r.beta` del sitemap en `build.mjs`.

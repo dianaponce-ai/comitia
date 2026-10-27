@@ -190,6 +190,10 @@ function initLazyModules() {
     const run = () => import('./splide.js').then((m) => m.initNews(news));
     if (mq.matches) whenNear(news, run); else mq.addEventListener && mq.addEventListener('change', (e) => { if (e.matches) run(); }, { once: true });
   }
+  const bx = $('#bx-wrap');
+  if (bx) whenNear(bx, () => import('./beta.js').then((m) => m.initExplorer(bx)));
+  const atlas = $('.bx-atlas');
+  if (atlas) import('./beta.js').then((m) => m.initOffices(atlas));
   const gal = $$('[data-gallery]');
   if (gal.length) gal.forEach((el) => {
     const open = () => import('./splide.js').then((m) => m.openGallery(+el.dataset.gallery));

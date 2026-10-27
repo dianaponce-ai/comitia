@@ -62,7 +62,7 @@ await Promise.all(sources.map(async ([file, key, out]) => {
 }));
 
 /* ---------- 2. CSS (mismo orden que el bundle del sitio anterior) ---------- */
-let css = ['src/styles/index.css', 'src/styles/app.css', 'src/styles/modal.css', 'node_modules/@splidejs/splide/dist/css/splide.min.css', 'src/styles/overrides.css']
+let css = ['src/styles/index.css', 'src/styles/app.css', 'src/styles/modal.css', 'node_modules/@splidejs/splide/dist/css/splide.min.css', 'src/styles/overrides.css', 'src/styles/beta.css']
   .map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 css = css.replace(/url\((['"]?)assets\/img\/([^'")]+)\1\)/g, (m, q, p) => {
   const a = assets[p]; if (!a) throw new Error('CSS: falta ' + p);
@@ -84,7 +84,7 @@ const chunk = (name) => { const o = Object.keys(js.metafile.outputs).find((x) =>
 
 /* ---------- 4. Archivos públicos, brochures y videos ---------- */
 fs.cpSync('public', OUT, { recursive: true });
-const brochures = { es: 'src/brochures/es.pdf', en: 'src/brochures/en.pdf' };
+const brochures = { es: 'src/brochures/es.pdf', en: 'src/brochures/en.pdf', pt: 'src/brochures/es.pdf' };
 fs.mkdirSync(OUT + '/brochures', { recursive: true });
 for (const l of S.LANGS) for (const k of Object.keys(S.LOCALES[l]).filter((k) => k.endsWith('-brochure-url'))) {
   fs.copyFileSync(brochures[l], OUT + '/brochures/' + S.LOCALES[l][k]);
@@ -99,17 +99,17 @@ const routes = S.routes();
 const urlOf = (r, l = r.lang) => r.unprefixed ? r.rest : '/' + l + (r.rest === '/' ? '' : r.rest);
 const has = new Set(routes.map((r) => r.lang + ':' + r.rest));
 const GTM = 'GTM-5QNJCVZL';
-const OG_LOCALE = { es: 'es_AR', en: 'en_US' };
+const OG_LOCALE = { es: 'es_AR', en: 'en_US', pt: 'pt_BR' };
 
 function head(r, c, m) {
   const self = ORIGIN + urlOf(r);
-  const alts = r.unprefixed ? '' : S.LANGS.filter((l) => has.has(l + ':' + r.rest)).map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN + urlOf(r, l)}">`).join('')
+  const alts = r.unprefixed ? '' : S.LANGS.filter((l) => has.has(l + ':' + r.rest)).map((l) => `<link rel="alternate" hreflang="${S.HTML_LANG[l]}" href="${ORIGIN + urlOf(r, l)}">`).join('')
     + `<link rel="alternate" hreflang="x-default" href="${ORIGIN + urlOf(r, 'es')}">`;
   const ogImg = m.image && c.assets[m.image] ? ORIGIN + c.assets[m.image].src : ORIGIN + '/comitia-og.jpg';
   const ogDims = m.image ? '' : '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">';
   const preload = r.kind === 'home' ? `<link rel="preload" as="image" href="${BASE}/video/comitia-video-home.jpg" media="(min-width: 746px)">` : '';
   return `<!doctype html>
-<html lang="${r.lang}">
+<html lang="${S.HTML_LANG[r.lang]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -124,6 +124,7 @@ ${alts}
 <meta property="og:description" content="${S.esc(m.desc)}">
 <meta property="og:url" content="${self}">
 <meta property="og:locale" content="${OG_LOCALE[r.lang]}">
+${S.LANGS.filter((l) => l !== r.lang).map((l) => `<meta property="og:locale:alternate" content="${OG_LOCALE[l]}">`).join('')}
 <meta property="og:image" content="${ogImg}">${ogDims}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${S.esc(m.title)}">
@@ -157,12 +158,13 @@ function jsonLd(r, c, m, self) {
     else {
       // Inglés: organización/sitio + página y producto con los textos traducidos
       graph = fix(es['@graph']).filter((n) => ['Organization', 'WebSite', 'WebPage', 'BreadcrumbList', 'Product', 'Service'].includes(n['@type'])).map((n) => {
-        const L = S.LOCALES.en;
+        const L = S.LOCALES[r.lang];
+        const HOME = { en: 'Home', pt: 'Início' }[r.lang], ORG = { en: 'Secure, scalable and auditable digital platforms for elections worldwide.', pt: 'Plataformas digitais seguras, escaláveis e auditáveis para eleições em todo o mundo.' }[r.lang], CAT = { en: 'Electoral Technology', pt: 'Tecnologia Eleitoral' }[r.lang];
         if (n['@type'] === 'WebPage') return { ...n, name: m.title, description: m.desc };
-        if (n['@type'] === 'Product') { const { additionalProperty, ...rest } = n; return { ...rest, description: m.desc, category: 'Electoral Technology' }; }
-        if (n['@type'] === 'BreadcrumbList') return { ...n, itemListElement: n.itemListElement.map((i, k) => ({ ...i, name: k === 0 ? 'Home' : (r.solution ? L[S.SOLUTIONS[r.solution].k + '-link'] || i.name : i.name) })) };
-        if (n['@type'] === 'Organization') return { ...n, description: 'Secure, scalable and auditable digital platforms for elections worldwide.' };
-        if (n['@type'] === 'Service') return { ...n, serviceType: 'Electoral Technology' };
+        if (n['@type'] === 'Product') { const { additionalProperty, ...rest } = n; return { ...rest, description: m.desc, category: CAT }; }
+        if (n['@type'] === 'BreadcrumbList') return { ...n, itemListElement: n.itemListElement.map((i, k) => ({ ...i, name: k === 0 ? HOME : (r.solution ? L[S.SOLUTIONS[r.solution].k + '-link'] || i.name : i.name) })) };
+        if (n['@type'] === 'Organization') return { ...n, description: ORG };
+        if (n['@type'] === 'Service') return { ...n, serviceType: CAT };
         return n;
       });
     }
@@ -170,7 +172,7 @@ function jsonLd(r, c, m, self) {
   } else if (m.article) {
     const x = m.article, l = r.lang;
     graph = [{ '@type': r.kind === 'nota' ? 'BlogPosting' : 'Article', headline: x.title[l] || x.title.es, description: m.desc, image: c.assets[x.image] ? ORIGIN + c.assets[x.image].src : undefined, inLanguage: l, mainEntityOfPage: self, publisher: { '@type': 'Organization', name: 'Comitia', logo: { '@type': 'ImageObject', url: ORIGIN + '/comitia-icon-512x512.png' } } },
-      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: l === 'es' ? 'Inicio' : 'Home', item: ORIGIN + '/' + l }, { '@type': 'ListItem', position: 2, name: S.LOCALES[l][r.kind === 'nota' ? 'blog-title' : 'casos-title'], item: ORIGIN + '/' + l + (r.kind === 'nota' ? '/blog' : '/casos') }, { '@type': 'ListItem', position: 3, name: x.title[l] || x.title.es, item: self }] }];
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: { es: 'Inicio', en: 'Home', pt: 'Início' }[l], item: ORIGIN + '/' + l }, { '@type': 'ListItem', position: 2, name: S.LOCALES[l][r.kind === 'nota' ? 'blog-title' : 'casos-title'], item: ORIGIN + '/' + l + (r.kind === 'nota' ? '/blog' : '/casos') }, { '@type': 'ListItem', position: 3, name: x.title[l] || x.title.es, item: self }] }];
   } else if (r.kind !== 'card') {
     graph = [{ '@type': 'WebPage', url: self, name: m.title, description: m.desc, inLanguage: r.lang, isPartOf: { '@id': ORIGIN + '/#website' }, publisher: org }];
   }
@@ -188,9 +190,12 @@ function page(r) {
   // idioma del navegador; la versión en inglés viaja en un <template>.
   let alt = '';
   if (r.kind === 'card') {
-    const ce = S.ctx({ lang: 'en', base: BASE, assets });
-    const re = { ...r, lang: 'en' };
-    alt = `<template id="alt-en">${S.header(ce, re) + r.render(ce) + S.footer(ce)}</template><script>(function(){var l;try{l=localStorage.getItem('i18nextLng')}catch(e){}if(!l)l=(navigator.language||'es').slice(0,2);if(l==='en'){var t=document.getElementById('alt-en');var a=document.querySelector('#root .App');a.innerHTML=t.innerHTML;document.documentElement.lang='en';window.__SITE__={lang:'en',base:'${BASE}',page:'card'}}})()</script>`;
+    for (const l of S.LANGS.filter((x) => x !== 'es')) {
+      const cl = S.ctx({ lang: l, base: BASE, assets });
+      const rl = { ...r, lang: l };
+      alt += `<template id="alt-${l}">${S.header(cl, rl) + r.render(cl) + S.footer(cl)}</template>`;
+    }
+    alt += `<script>(function(){var l;try{l=localStorage.getItem('i18nextLng')}catch(e){}if(!l)l=(navigator.language||'es').slice(0,2);var t=document.getElementById('alt-'+l);if(t){document.querySelector('#root .App').innerHTML=t.innerHTML;document.documentElement.lang=l==='pt'?'pt-BR':l;window.__SITE__={lang:l,base:'${BASE}',page:'card'}}})()</script>`;
   }
   return `${head(r, c, m)}
 <body>
@@ -221,8 +226,8 @@ for (const r of routes) {
 }
 
 // "/" → idioma preferido (como el sitio anterior). Los buscadores ven x-default.
-const redirectPage = (target, js) => `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title><meta name="robots" content="noindex"><link rel="canonical" href="${ORIGIN}${target}"><link rel="alternate" hreflang="es" href="${ORIGIN}/es"><link rel="alternate" hreflang="en" href="${ORIGIN}/en"><link rel="alternate" hreflang="x-default" href="${ORIGIN}/es"><script>${js}</script><meta http-equiv="refresh" content="0; url=${BASE}${target}"></head><body><a href="${BASE}/es">Español</a> · <a href="${BASE}/en">English</a></body></html>\n`;
-const prefLang = `var l='es';try{var s=localStorage.getItem('i18nextLng');if(s==='en'||s==='es')l=s;else if((navigator.language||'').slice(0,2)==='en')l='en'}catch(e){}`;
+const redirectPage = (target, js) => `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>COMITIA</title><meta name="robots" content="noindex"><link rel="canonical" href="${ORIGIN}${target}"><link rel="alternate" hreflang="es" href="${ORIGIN}/es"><link rel="alternate" hreflang="en" href="${ORIGIN}/en"><link rel="alternate" hreflang="pt-BR" href="${ORIGIN}/pt"><link rel="alternate" hreflang="x-default" href="${ORIGIN}/es"><script>${js}</script><meta http-equiv="refresh" content="0; url=${BASE}${target}"></head><body><a href="${BASE}/es">Español</a> · <a href="${BASE}/en">English</a> · <a href="${BASE}/pt">Português</a></body></html>\n`;
+const prefLang = `var l='es';try{var s=localStorage.getItem('i18nextLng'),n=(navigator.language||'').slice(0,2);if(s==='en'||s==='es'||s==='pt')l=s;else if(n==='en'||n==='pt')l=n}catch(e){}`;
 write('index.html', redirectPage('/es', `${prefLang}location.replace('${BASE}/'+l+location.search+location.hash);`));
 // Rutas viejas sin idioma (/casos, /bue, ...) → misma página con idioma
 const legacy = [...new Set(routes.filter((r) => !r.unprefixed && r.rest !== '/').map((r) => r.rest))];
@@ -230,14 +235,14 @@ for (const rest of legacy) write(rest + '.html', redirectPage('/es' + rest, `${p
 
 /* ---------- 6. sitemap, robots, vercel ---------- */
 const today = new Date().toISOString().slice(0, 10);
-const indexable = routes.filter((r) => !r.unprefixed);
+const indexable = routes.filter((r) => !r.unprefixed && !r.beta);
 const groups = [...new Set(indexable.map((r) => r.rest))];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${groups.flatMap((rest) => S.LANGS.filter((l) => has.has(l + ':' + rest)).map((l) => {
   const r = indexable.find((x) => x.rest === rest && x.lang === l);
   const prio = rest === '/' ? '1.0' : r.kind === 'solution' ? '0.9' : ['caso', 'nota', 'legal'].includes(r.kind) ? (r.kind === 'legal' ? '0.3' : '0.7') : '0.8';
-  return `  <url><loc>${ORIGIN + urlOf(r)}</loc><lastmod>${today}</lastmod><priority>${prio}</priority>${S.LANGS.filter((x) => has.has(x + ':' + rest)).map((x) => `<xhtml:link rel="alternate" hreflang="${x}" href="${ORIGIN + urlOf(r, x)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${ORIGIN + urlOf(r, 'es')}"/></url>`;
+  return `  <url><loc>${ORIGIN + urlOf(r)}</loc><lastmod>${today}</lastmod><priority>${prio}</priority>${S.LANGS.filter((x) => has.has(x + ':' + rest)).map((x) => `<xhtml:link rel="alternate" hreflang="${S.HTML_LANG[x]}" href="${ORIGIN + urlOf(r, x)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${ORIGIN + urlOf(r, 'es')}"/></url>`;
 })).join('\n')}
 </urlset>
 `;
